@@ -975,7 +975,6 @@ if (showTerminalTab) {
 const defaultCode = `START
 
     // Welcome to PseudoPlay!
-    // Click Run (Ctrl+Enter) to start.
     
     INIT name = ""
     PRINT "What is your name?"
@@ -1012,4 +1011,5 @@ if (savedCode) {
 updateHighlights();
 updateLineNumbers();
 appendLine("Pseudocode Interpreter Ready.", "system");
+
 
