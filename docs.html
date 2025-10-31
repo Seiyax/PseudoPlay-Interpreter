@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Full Syntax Guide - PseudoPlay</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="icon" href="assets/img/logo.png" sizes="192x192" />
+<link rel="icon" href="assets/img/logo.png" sizes="512x512" />
+  <style>
+    /* --- Fix for scrolling --- */
+    html, body {
+      overflow: auto;
+      height: auto;
+    }
+
+    /* --- Animation for accordion content --- */
+    @keyframes fadeIn { 
+      from { opacity: 0; transform: translateY(-10px); } 
+      to { opacity: 1; transform: translateY(0); } 
+    }
+    .accordion-content {
+      /* This animation is applied when the 'hidden' class is removed */
+      animation: fadeIn 0.4s ease-out;
+    }
+    
+    /* --- JS-driven rotation for the arrow --- */
+    .accordion-toggle.active .arrow {
+      transform: rotate(90deg);
+    }
+
+    /* --- Syntax Highlighting styles for <pre> blocks --- */
+    /* These can't be inlined as they are for generated spans */
+    .docs-section .kw { @apply text-accent font-semibold; }
+    .docs-section .str { color: #d97706; }
+    .dark .docs-section .str { color: #f59e0b; }
+    .docs-section .num { color: #059669; }
+    .dark .docs-section .num { color: #10b981; }
+    .docs-section .com { @apply text-slate-500 italic; }
+  </style>
+</head>
+
+<body class="bg-bg-light text-text-primary transition-all duration-300 min-h-screen flex flex-col font-sans antialiased">
+
+  <!-- Main container -->
+  <div class="flex-1 flex flex-col max-w-7xl w-full p-4 sm:p-6 lg:p-8 gap-6 animate-fadeIn mx-auto">
+
+    <!-- Header -->
+    <header class="flex items-center justify-between pb-4 border-b border-border animate-slideDown">
+      <div class="flex items-center gap-4">
+        <h1>
+          <!-- Correct classes for theme switching -->
+          <img src="assets/img/black-banner.png" alt="PseudoPlay Logo Light Mode" id="lightModeBanner" class="h-8 sm:h-9">
+          <img src="assets/img/white-banner.png" alt="PseudoPlay Logo Dark Mode" id="darkModeBanner" class="h-8 sm:h-9 hidden">
+        </h1>
+        <a href="index.html" class="text-sm font-medium text-text-secondary hover:text-accent transition-colors">&larr; Back to Editor</a>
+      </div>
+      <button id="themeToggle" aria-label="Toggle dark mode" class="p-2.5 rounded-xl bg-bg-secondary hover:bg-bg-hover text-text-primary transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50 animate-pulse-hover">
+        <svg id="sunIcon" class="hidden w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        <svg id="moonIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+      </button>
+    </header>
+
+    <!-- Hero Section -->
+    <div class="bg-bg-primary p-8 rounded-xl shadow-lg border border-border mb-8 text-center">
+      <h1 class="text-4xl md:text-5xl font-bold text-text-primary mb-4">PseudoPlay Full Syntax Guide</h1>
+      <p class="text-text-secondary text-lg max-w-3xl mx-auto">A comprehensive guide to writing and running pseudocode in PseudoPlay. Learn the basics, advanced features, and best practices for effective programming.</p>
+    </div>
+
+    <!-- Main Content with Sidebar -->
+    <div class="flex flex-col lg:flex-row gap-8">
+      <!-- Table of Contents Sidebar -->
+      <aside class="lg:w-1/4">
+        <nav class="toc sticky top-6 bg-bg-primary p-6 rounded-xl shadow-lg border border-border">
+          <h2 class="text-xl font-bold text-text-primary mb-4">Table of Contents</h2>
+          <ul class="space-y-3">
+            <li class="flex items-center gap-2">
+              <a href="#getting-started" class="text-text-secondary hover:text-accent transition-colors flex-1 text-sm font-medium">Getting Started</a>
+              <svg class="chevron w-5 h-5 text-accent opacity-70 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </li>
+            <li class="flex items-center gap-2">
+              <a href="#variables" class="text-text-secondary hover:text-accent transition-colors flex-1 text-sm font-medium">Variables & Data Types</a>
+              <svg class="chevron w-5 h-5 text-accent opacity-70 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </li>
+            <li class="flex items-center gap-2">
+              <a href="#input-output" class="text-text-secondary hover:text-accent transition-colors flex-1 text-sm font-medium">Input & Output</a>
+              <svg class="chevron w-5 h-5 text-accent opacity-70 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </li>
+            <li class="flex items-center gap-2">
+              <a href="#control-flow" class="text-text-secondary hover:text-accent transition-colors flex-1 text-sm font-medium">Control Flow</a>
+              <svg class="chevron w-5 h-5 text-accent opacity-70 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </li>
+            <li class="flex items-center gap-2">
+              <a href="#loops" class="text-text-secondary hover:text-accent transition-colors flex-1 text-sm font-medium">Loops</a>
+              <svg class="chevron w-5 h-5 text-accent opacity-70 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </li>
+
+            <li class="flex items-center gap-2">
+              <a href="#procedures-functions" class="text-text-secondary hover:text-accent transition-colors flex-1 text-sm font-medium">Procedures & Functions (Coming Soon)</a>
+              <svg class="chevron w-5 h-5 text-accent opacity-70 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </li>
+            <li class="flex items-center gap-2">
+              <a href="#best-practices" class="text-text-secondary hover:text-accent transition-colors flex-1 text-sm font-medium">Best Practices</a>
+              <svg class="chevron w-5 h-5 text-accent opacity-70 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </li>
+            <li class="flex items-center gap-2">
+              <a href="#troubleshooting" class="text-text-secondary hover:text-accent transition-colors flex-1 text-sm font-medium">Troubleshooting & Errors</a>
+              <svg class="chevron w-5 h-5 text-accent opacity-70 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Docs Content -->
+      <main class="flex-1 animate-fadeInUp">
+        <!-- Getting Started -->
+        <div id="getting-started" class="docs-section bg-bg-primary p-6 rounded-xl shadow-lg border border-border mb-6 transition-all duration-300 hover:shadow-xl">
+          <button class="accordion-toggle group flex justify-between items-center w-full p-4 rounded-lg bg-bg-secondary hover:bg-bg-hover transition-all duration-200 cursor-pointer">
+            <h2 class="text-2xl font-bold text-text-primary mb-0 transition-colors group-hover:text-accent">Getting Started</h2>
+            <svg class="arrow w-6 h-6 text-accent flex-shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <div class="accordion-content hidden pt-4 mt-4 border-t border-border">
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">PseudoPlay allows you to write and execute pseudocode in a simple, intuitive environment. All programs must start with <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">START</code> (or <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">BEGIN</code>) and end with <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">STOP</code> (or <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">END</code>).</p>
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">Comments help explain your code and are ignored during execution. Use <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">//</code>, <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">'</code>, <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">#</code>, or <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">--</code> for single-line comments, or <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">/* ... */</code> for multi-line comments.</p>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+
+    <span class="com">// Single-line comment</span>
+    <span class="com"># Another single-line</span>
+    <span class="com">-- Yet another</span>
+    
+    <span class="com">/*
+      Multi-line
+      comment
+    */</span>
+    
+    <span class="kw">PRINT</span> <span class="str">"Hello, World!"</span>
+    
+<span class="kw">STOP</span></pre>
+            <div class="tip p-4 rounded-lg mt-4 border-l-4 bg-accent-light text-text-primary border-accent">
+              <strong>Tip:</strong> Use comments liberally to make your code readable. Press Ctrl+Enter to run your code quickly.
+            </div>
+          </div>
+        </div>
+
+        <!-- Variables -->
+        <div id="variables" class="docs-section bg-bg-primary p-6 rounded-xl shadow-lg border border-border mb-6 transition-all duration-300 hover:shadow-xl">
+          <button class="accordion-toggle group flex justify-between items-center w-full p-4 rounded-lg bg-bg-secondary hover:bg-bg-hover transition-all duration-200 cursor-pointer">
+            <h2 class="text-2xl font-bold text-text-primary mb-0 transition-colors group-hover:text-accent">Variables & Data Types</h2>
+            <svg class="arrow w-6 h-6 text-accent flex-shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <div class="accordion-content hidden pt-4 mt-4 border-t border-border">
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">Variables store data like numbers, strings, or booleans. Declare them with <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">DECLARE</code> (initializes to null) or <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">INIT</code> (declare and assign). Data types are inferred automatically.</p>
+            <h3 class="text-xl font-semibold text-accent mt-6 mb-3 border-b border-border pb-2">Declaring Variables</h3>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">DECLARE</span> name  <span class="com">// null by default</span>
+    <span class="kw">INIT</span> age = <span class="num">25</span>
+    <span class="kw">INIT</span> message = <span class="str">"Hello"</span>
+    <span class="kw">INIT</span> isActive = <span class="kw">TRUE</span>
+    
+    <span class="com">// Multiple declarations</span>
+    <span class="kw">DECLARE</span> x, y, z
+    <span class="kw">INIT</span> a = <span class="num">1</span>, b = <span class="num">2</span>
+<span class="kw">STOP</span></pre>
+            <h3 class="text-xl font-semibold text-accent mt-6 mb-3 border-b border-border pb-2">Assigning Values</h3>
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">Use <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">SET</code>, <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">LET</code>, or direct assignment to change values. Variables must be declared first.</p>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT</span> score = <span class="num">0</span>
+    <span class="kw">SET</span> score = <span class="num">10</span>
+    <span class="kw">LET</span> score = score + <span class="num">5</span>
+    score = <span class="num">20</span>  <span class="com">// Direct assignment</span>
+    
+    <span class="kw">PRINT</span> score  <span class="com">// 20</span>
+<span class="kw">STOP</span></pre>
+            <div class="warning p-4 rounded-lg mt-4 border-l-4 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border-red-500">
+              <strong>Warning:</strong> Using undeclared variables will throw an error. Always declare before use.
+            </div>
+          </div>
+        </div>
+
+        <!-- Input / Output -->
+        <div id="input-output" class="docs-section bg-bg-primary p-6 rounded-xl shadow-lg border border-border mb-6 transition-all duration-300 hover:shadow-xl">
+          <button class="accordion-toggle group flex justify-between items-center w-full p-4 rounded-lg bg-bg-secondary hover:bg-bg-hover transition-all duration-200 cursor-pointer">
+            <h2 class="text-2xl font-bold text-text-primary mb-0 transition-colors group-hover:text-accent">Input & Output</h2>
+            <svg class="arrow w-6 h-6 text-accent flex-shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <div class="accordion-content hidden pt-4 mt-4 border-t border-border">
+            <h3 class="text-xl font-semibold text-accent mt-6 mb-3 border-b border-border pb-2">Output with PRINT / OUTPUT</h3>
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">Display text, variables, or expressions. Combine with <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">+</code> or commas.</p>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT</span> name = <span class="str">"User"</span>
+    <span class="kw">PRINT</span> <span class="str">"Hello, "</span> + name + <span class="str">"!"</span>
+    <span class="kw">OUTPUT</span> <span class="str">"Score: "</span>, <span class="num">100</span>
+<span class="kw">STOP</span></pre>
+            <h3 class="text-xl font-semibold text-accent mt-6 mb-3 border-b border-border pb-2">Input with INPUT / READ</h3>
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">Read user input and store in a declared variable. Optional prompt.</p>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">DECLARE</span> age
+    <span class="kw">PRINT</span> <span class="str">"Enter your age:"</span>
+    <span class="kw">INPUT</span> age
+    <span class="kw">PRINT</span> <span class="str">"You are "</span> + age + <span class="str">" years old."</span>
+<span class="kw">STOP</span></pre>
+            <div class="tip p-4 rounded-lg mt-4 border-l-4 bg-accent-light text-text-primary border-accent">
+              <strong>Tip:</strong> Input is treated as string unless numeric. Use expressions to convert if needed.
+            </div>
+          </div>
+        </div>
+
+        <!-- Control Flow -->
+        <div id="control-flow" class="docs-section bg-bg-primary p-6 rounded-xl shadow-lg border border-border mb-6 transition-all duration-300 hover:shadow-xl">
+          <button class="accordion-toggle group flex justify-between items-center w-full p-4 rounded-lg bg-bg-secondary hover:bg-bg-hover transition-all duration-200 cursor-pointer">
+            <h2 class="text-2xl font-bold text-text-primary mb-0 transition-colors group-hover:text-accent">Control Flow</h2>
+            <svg class="arrow w-6 h-6 text-accent flex-shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <div class="accordion-content hidden pt-4 mt-4 border-t border-border">
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">Use <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">IF</code> for decisions. Supports <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">ELSEIF</code> and <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">ELSE</code>. End with <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">ENDIF</code>.</p>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">DECLARE</span> score
+    <span class="kw">INPUT</span> <span class="str">"Enter score:"</span>, score
+    
+    <span class="kw">IF</span> score >= <span class="num">90</span> <span class="kw">THEN</span>
+        <span class="kw">PRINT</span> <span class="str">"A Grade"</span>
+    <span class="kw">ELSEIF</span> score >= <span class="num">70</span> <span class="kw">THEN</span>
+        <span class="kw">PRINT</span> <span class="str">"B Grade"</span>
+    <span class="kw">ELSE</span>
+        <span class="kw">PRINT</span> <span class="str">"Needs Improvement"</span>
+    <span class="kw">ENDIF</span>
+<span class="kw">STOP</span></pre>
+            <div class="tip p-4 rounded-lg mt-4 border-l-4 bg-accent-light text-text-primary border-accent">
+              <strong>Tip:</strong> Nest IF statements for complex logic, but keep indentation consistent.
+            </div>
+          </div>
+        </div>
+
+        <!-- Loops -->
+        <div id="loops" class="docs-section bg-bg-primary p-6 rounded-xl shadow-lg border border-border mb-6 transition-all duration-300 hover:shadow-xl">
+          <button class="accordion-toggle group flex justify-between items-center w-full p-4 rounded-lg bg-bg-secondary hover:bg-bg-hover transition-all duration-200 cursor-pointer">
+            <h2 class="text-2xl font-bold text-text-primary mb-0 transition-colors group-hover:text-accent">Loops</h2>
+            <svg class="arrow w-6 h-6 text-accent flex-shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <div class="accordion-content hidden pt-4 mt-4 border-t border-border">
+            <h3 class="text-xl font-semibold text-accent mt-6 mb-3 border-b border-border pb-2">FOR Loop</h3>
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">Repeat a fixed number of times. Optional <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">STEP</code>. End with <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">NEXT</code>.</p>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT </span>i<span class="num"></span>
+    <span class="kw">FOR</span> i = <span class="num">1</span> <span class="kw">TO</span> <span class="num">5</span> <span class="kw">STEP</span> <span class="num">1</span>
+        <span class="kw">PRINT</span> i
+    <span class="kw">NEXT</span>
+<span class="kw">STOP</span></pre>
+            <h3 class="text-xl font-semibold text-accent mt-6 mb-3 border-b border-border pb-2">WHILE Loop</h3>
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">Repeat while condition is true. End with <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">ENDWHILE</code>.</p>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT</span> count = <span class="num">0</span>
+    <span class="kw">WHILE</span> count < <span class="num">5</span>
+        <span class="kw">PRINT</span> count
+        count = count + <span class="num">1</span>
+    <span class="kw">ENDWHILE</span>
+<span class="kw">STOP</span></pre>
+            <h3 class="text-xl font-semibold text-accent mt-6 mb-3 border-b border-border pb-2">REPEAT UNTIL Loop</h3>
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">Repeat until condition is true (runs at least once).</p>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT</span> num = <span class="num">0</span>
+    <span class="kw">REPEAT</span>
+        <span class="kw">PRINT</span> <span class="str">"Enter >10:"</span>
+        <span class="kw">INPUT</span> num
+    <span class="kw">UNTIL</span> num > <span class="num">10</span>
+<span class="kw">STOP</span></pre>
+            <div class="warning p-4 rounded-lg mt-4 border-l-4 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border-red-500">
+              <strong>Warning:</strong> Avoid infinite loops! There's a max iteration limit to prevent crashes.
+            </div>
+          </div>
+        </div>
+
+       
+
+        <!-- Procedures & Functions -->
+        <div id="procedures-functions" class="docs-section bg-bg-primary p-6 rounded-xl shadow-lg border border-border mb-6 transition-all duration-300 hover:shadow-xl">
+          <button class="accordion-toggle group flex justify-between items-center w-full p-4 rounded-lg bg-bg-secondary hover:bg-bg-hover transition-all duration-200 cursor-pointer">
+            <h2 class="text-2xl font-bold text-text-primary mb-0 transition-colors group-hover:text-accent">Procedures & Functions (Coming Soon)</h2>
+            <svg class="arrow w-6 h-6 text-accent flex-shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <div class="accordion-content hidden pt-4 mt-4 border-t border-border">
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">Procedures and functions are defined but not yet executable. They are skipped during runtime.</p>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">PROCEDURE</span> Greet(name)
+    <span class="kw">PRINT</span> <span class="str">"Hello, "</span> + name
+<span class="kw">ENDPROCEDURE</span></pre>
+            <div class="warning p-4 rounded-lg mt-4 border-l-4 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border-red-500">
+              <strong>Note:</strong> Calling procedures/functions will error. Full support coming in future updates.
+            </div>
+          </div>
+        </div>
+
+        <!-- Best Practices -->
+        <div id="best-practices" class="docs-section bg-bg-primary p-6 rounded-xl shadow-lg border border-border mb-6 transition-all duration-300 hover:shadow-xl">
+          <button class="accordion-toggle group flex justify-between items-center w-full p-4 rounded-lg bg-bg-secondary hover:bg-bg-hover transition-all duration-200 cursor-pointer">
+            <h2 class="text-2xl font-bold text-text-primary mb-0 transition-colors group-hover:text-accent">Best Practices</h2>
+            <svg class="arrow w-6 h-6 text-accent flex-shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <div class="accordion-content hidden pt-4 mt-4 border-t border-border">
+            <ul class="list-disc pl-6 text-text-secondary space-y-2">
+              <li>Use consistent indentation (auto-indent helps!).</li>
+              <li>Declare all variables at the top of your program.</li>
+              <li>Add comments for complex logic.</li>
+              <li>Test small parts of code incrementally.</li>
+              <li>Avoid deep nesting; use functions when available.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Troubleshooting -->
+        <div id="troubleshooting" class="docs-section bg-bg-primary p-6 rounded-xl shadow-lg border border-border mb-6 transition-all duration-300 hover:shadow-xl">
+          <button class="accordion-toggle group flex justify-between items-center w-full p-4 rounded-lg bg-bg-secondary hover:bg-bg-hover transition-all duration-200 cursor-pointer">
+            <h2 class="text-2xl font-bold text-text-primary mb-0 transition-colors group-hover:text-accent">Troubleshooting & Errors</h2>
+            <svg class="arrow w-6 h-6 text-accent flex-shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <div class="accordion-content hidden pt-4 mt-4 border-t border-border">
+            <ul class="list-disc pl-6 text-text-secondary space-y-2">
+              <li><strong>Undeclared Variable:</strong> Always use DECLARE/INIT first.</li>
+              <li><strong>Mismatched Blocks:</strong> Ensure IF/ENDIF, loops match.</li>
+              <li><strong>Infinite Loop:</strong> Check conditions; max iterations prevent hangs.</li>
+              <li><strong>Syntax Error:</strong> Check quotes, operators, and keywords.</li>
+            </ul>
+            <div class="tip p-4 rounded-lg mt-4 border-l-4 bg-accent-light text-text-primary border-accent">
+              <strong>Tip:</strong> Use the line highlight to debug step-by-step.
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+
+    <footer class="text-center text-xs text-text-secondary py-3 border-t border-border animate-fadeInUp">
+      <p>PseudoPlay • </span>MISS KO NA SHA TT</p>
+    </footer>
+
+  </div>
+
+  <script src="docs.js"></script>
+
+</body>
+</html>
+
