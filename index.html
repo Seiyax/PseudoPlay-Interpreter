@@ -18,29 +18,23 @@
   <div class="flex-1 flex flex-col max-w-full w-full p-4 sm:p-6 lg:p-8 gap-6 animate-fadeIn overflow-hidden">
 
     <header class="flex items-center justify-between pb-4 border-b border-border animate-slideDown">
-      <!-- --- UPDATED: Wrapped logo/tagline in a div and added link --- -->
-      <div class="flex items-center gap-4">
-        <div>
-          <h1>
-            <!--
-              We've given the images IDs and removed the Tailwind 'dark:' classes.
-              The script.js file will now control which one is hidden.
-            -->
-            <img src="assets/img/black-banner.png" alt="PseudoPlay Logo Light Mode" id="lightModeBanner" class="h-8 sm:h-9">
-            <img src="assets/img/white-banner.png" alt="PseudoPlay Logo Dark Mode" id="darkModeBanner" class="h-8 sm:h-9 hidden">
-          </h1>
-        <!-- --- NEW LINK TO DOCS --- -->
-        <a href="docs.html" class="text-sm font-medium text-text-secondary hover:text-accent transition-colors">Syntax Guide &rarr;</a>
-      </div>
-      <button id="themeToggle" aria-label="Toggle dark mode" class="p-2.5 rounded-xl bg-bg-secondary hover:bg-bg-hover text-text-primary transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50 animate-pulse-hover">
-        <svg id="sunIcon" class="hidden w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
-        <svg id="moonIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-        </svg>
-      </button>
-    </header>
+  <div class="flex items-center gap-4">
+    <h1>
+      <img src="assets/img/black-banner.png" alt="PseudoPlay Logo Light Mode" id="lightModeBanner" class="h-8 sm:h-9">
+      <img src="assets/img/white-banner.png" alt="PseudoPlay Logo Dark Mode" id="darkModeBanner" class="h-8 sm:h-9 hidden">
+    </h1>
+    <a href="docs.html" class="text-sm font-medium text-text-secondary hover:text-accent transition-colors">Syntax Guide &rarr;</a>
+  </div>
+
+  <button id="themeToggle" aria-label="Toggle dark mode" class="p-2.5 rounded-xl bg-bg-secondary hover:bg-bg-hover text-text-primary transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50 animate-pulse-hover">
+    <svg id="sunIcon" class="hidden w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+    </svg>
+    <svg id="moonIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+    </svg>
+  </button>
+</header>
 
     <div class="flex flex-wrap items-center gap-2 p-3 bg-bg-primary rounded-xl shadow-sm border border-border animate-slideInLeft">
       <div class="flex gap-2">
@@ -57,7 +51,7 @@
         <!-- --- NEW RESET BUTTON --- -->
         <button id="resetBtn" class="btn-action btn-secondary" title="Reset Editor">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 15l-3-3m0 0l3-3m-3 3h8a4 4 0 110 8h-1"></path>
           </svg>
         </button>
       </div>
@@ -80,7 +74,7 @@
         </div>
       </section>
 
-      <aside id="terminalPanel" class="hidden lg:flex lg:w-1/2 flex-col min-h-0 flex-1">
+      <aside id="terminalPanel" class="hidden flex lg:flex lg:w-1/2 flex-col min-h-0 flex-1">
         <div class="flex flex-col bg-bg-primary rounded-xl shadow-lg border border-border flex-1 min-h-0 overflow-hidden">
           <div class="flex items-center justify-between px-4 py-3 bg-bg-secondary border-b border-border">
             <div class="flex items-center gap-2 text-sm font-medium text-text-primary">
@@ -89,7 +83,7 @@
             </div>
             <button id="clearTerminal" class="btn-icon-sm" title="Clear terminal">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
               </svg>
             </button>
           </div>
@@ -98,10 +92,10 @@
       </aside>
     </div>
 
-    <footer class="text-center text-xs text-text-secondary py-3 border-t border-border animate-fadeInUp">
+    <!-- <footer class="text-center text-xs text-text-secondary py-3 border-t border-border animate-fadeInUp">
       <p>PseudoPlay </p>
     </footer>
-  </div>
+  </div> -->
 
   <script src="script.js"></script>
 
