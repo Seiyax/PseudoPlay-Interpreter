@@ -80,6 +80,7 @@ html, body {
 @keyframes slideInLeft { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); } }
 @keyframes slideInRight { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); } }
 @keyframes pulse-hover { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
 .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
 .animate-fadeInUp { animation: fadeInUp 0.6s ease-out; }
@@ -104,14 +105,33 @@ html, body {
   border: none;
   cursor: pointer;
   font-size: 1.25rem; /* For emoji fallback */
+
+  /* --- ADD THESE 3 LINES --- */
+  position: relative; /* For spinner later */
+  overflow: hidden; /* For spinner later */
+  outline: 2px solid transparent; /* Fallback */
 }
 .btn-action:hover { background: var(--bg-hover); }
-.btn-primary { background: var(--success); color: #fff; }
-.btn-primary:hover { background: #10a070; }
+/* --- THIS IS THE KEY CHANGE (was --success) --- */
+.btn-primary { background: var(--accent); color: #fff; }
+/* --- MAKE HOVER DARKER ACCENT --- */
+.btn-primary:hover { background: #6d28d9; } /* A darker purple */
 .btn-danger { background: var(--danger); color: #fff; }
 .btn-danger:hover { background: #e03030; }
 .btn-secondary { color: var(--text-secondary); }
 .btn-secondary:hover { color: var(--text-primary); }
+
+/* --- ADD FOCUS RINGS TO ALL BUTTONS --- */
+.btn-action:focus-visible, .btn-icon-sm:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+/* For Tailwind-based focus (if you prefer) */
+/* .btn-action:focus, .btn-icon-sm:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-light), 0 0 0 4px var(--accent);
+} */
+
 
 .btn-icon-sm {
   background: transparent;
@@ -125,6 +145,8 @@ html, body {
   justify-content: center;
   transition: all 0.2s ease;
   cursor: pointer;
+  /* --- ADD THIS LINE --- */
+  outline: 2px solid transparent; /* Fallback */
 }
 .btn-icon-sm:hover {
   background: var(--bg-hover);
@@ -265,3 +287,30 @@ textarea.code::-webkit-scrollbar-thumb {
    ------------------------------------------------- */
 textarea.code::selection { background: var(--selection); }
 textarea.code:focus { outline: 2px solid transparent; }
+
+/* Add this at the end of style.css */
+
+.btn-action.is-running svg {
+  /* Hide the play icon */
+  opacity: 0;
+}
+
+.btn-action.is-running::after {
+  /* Show the spinner */
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: calc(50% - 8px);
+  left: calc(50% - 8px);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+/* Style for disabled state */
+.btn-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
