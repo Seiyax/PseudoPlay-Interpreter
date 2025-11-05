@@ -32,6 +32,7 @@ let lineMap = []; // <-- NEW: To map clean code lines to original editor lines
 // --- Loop safety ---
 let maxIterations = 1000000;
 let iterationCount = 0;
+let currentInputReject = null;
 
 // keywords for highlighting
 const keywords = [
@@ -332,6 +333,17 @@ function appendLine(text, type = 'info'){
 }
 
 function appendInvisiblePrompt(callback){
+  // --- ADD THESE ---
+  let isResolved = false; // Prevents double-trigger
+  const promiseReject = (reason) => {
+    if (isResolved) return;
+    isResolved = true;
+    div.innerHTML = `[Input Canceled]`;
+    div.style.color = '#f87171'; // red-400
+    callback(new Error(reason)); // Reject the main promise
+  };
+  // --- END ADD ---
+
   const div = document.createElement('div');
   div.className = 'prompt';
   div.innerHTML = `<input type="text" class="input-field" autofocus>`;
@@ -341,14 +353,24 @@ function appendInvisiblePrompt(callback){
 
   input.addEventListener('keydown', function onKey(e){
     if(e.key === 'Enter'){
+      // --- ADD THESE CHECKS ---
+      if (isResolved) return;
+      isResolved = true;
+      currentInputReject = null; // Clear the global rejector
+      // --- END ADD ---
+
       const val = input.value;
-      div.innerHTML = `${val}`; // Removed extra '>'
+      div.innerHTML = `${val}`; 
       div.style.color = '#34d399'; // green-400
       logData += '> ' + val + "\n";
       input.removeEventListener('keydown', onKey);
-      callback(val);
+      callback(val); // Resolve the main promise
     }
   });
+
+  // --- SET THE GLOBAL REJECTOR ---
+  currentInputReject = () => promiseReject("Execution Stopped");
+  // --- END SET ---
 
   terminal.scrollTop = terminal.scrollHeight;
 }
@@ -730,11 +752,20 @@ async function executeNextLine(controlStack) {
         const promptText = parts.join(',').trim();
         if (promptText) { appendLine(evalExpr(promptText)); }
 
-        const val = await new Promise(resolve => {
-          appendInvisiblePrompt(resolve);
+        // --- REPLACE THE OLD AWAIT WITH THIS PROMISE ---
+        const val = await new Promise((resolve, reject) => {
+          appendInvisiblePrompt((value) => {
+            if (value instanceof Error) {
+              reject(value); // This will be the "Execution Stopped" error
+            } else {
+              resolve(value);
+            }
+          });
         });
+        // --- END REPLACEMENT ---
+
+        // This code will NOT run if the promise was rejected
         const numeric = (val !== '' && !isNaN(val) && val.trim() !== '');
-        
         variables[varName] = numeric ? parseFloat(val) : val;
         
         currentLine++;
@@ -757,8 +788,20 @@ async function executeNextLine(controlStack) {
       // --- 6. Unhandled ---
       throw new Error(`Unknown or invalid syntax: "${trimmed}"`);
     
-    } catch (error) { // --- *** UPDATED: Catch block for execution errors *** ---
-        // Use the lineMap to report the correct line number
+    } catch (error) { // --- *** THIS IS THE BLOCK TO EDIT *** ---
+        
+        // --- ADD THIS "IF" CHECK ---
+        if (error.message === "Execution Stopped") {
+            // This was a user-triggered stop.
+            // The stop button already printed the message.
+            // We just need to stop the loop.
+            isRunning = false;
+            hideLineHighlight();
+            return false;
+        }
+        // --- END OF ADDITION ---
+
+        // If it's any OTHER error, report it as normal:
         appendLine(`Error on line ${lineMap[currentLine]}: ${error.message}`, 'error');
         isRunning = false;
         hideLineHighlight();
@@ -768,22 +811,41 @@ async function executeNextLine(controlStack) {
 
 
 // --- runProgram() ---
+// --- runProgram() ---
 async function runProgram() {
     const controlStack = []; // Stack for IF/LOOP logic
     
-    while (isRunning) {
-        const continueRunning = await executeNextLine(controlStack);
-        if (!continueRunning) {
-            break; // Program finished or error
-        }
-        
-        // --- NEW: When running, switch to terminal tab on mobile ---
-        if (window.innerWidth < 1024 && terminalPanel.classList.contains('hidden')) {
-            showTerminalTab.click();
-        }
+    try {
+      while (isRunning) {
+          const continueRunning = await executeNextLine(controlStack);
+          if (!continueRunning) {
+              break; // Program finished or error
+          }
+          
+          // --- NEW: When running, switch to terminal tab on mobile ---
+          if (window.innerWidth < 1024 && terminalPanel.classList.contains('hidden')) {
+              showTerminalTab.click();
+          }
 
-        // Yield to the event loop
-        await new Promise(resolve => setTimeout(resolve, 0));
+          // Yield to the event loop
+          await new Promise(resolve => setTimeout(resolve, 0));
+      }
+    } catch (e) { 
+        // --- UPDATE THIS CATCH BLOCK ---
+        if (e.message === "Execution Stopped") {
+          // This is a normal, user-triggered stop. Do nothing.
+          // The stop button already printed the message.
+        } else {
+          // This is a real, unexpected error
+          appendLine(`Fatal Error: ${e.message}`, 'error');
+        }
+        isRunning = false; // Ensure this is set on error
+        // --- END UPDATE ---
+    } finally { 
+        // This runs whether the code finished, stopped, or errored
+        // --- THIS IS THE CRITICAL PART ---
+        setControls(false); // ALWAYS re-enable controls
+        currentInputReject = null; // Clear any leftover rejector
     }
 }
 
@@ -850,10 +912,15 @@ function evalExpr(expr) {
 
 // --- *** UPDATED FUNCTION *** ---
 // This function now correctly handles the clean code and map
+// --- *** UPDATED FUNCTION *** ---
+// This function now correctly handles the clean code and map
 function startRun() {
     terminal.innerHTML = '';
     logData = '';
     hideLineHighlight();
+
+    // --- ADD THIS LINE AT THE TOP ---
+    setControls(true); // Disable controls, show spinner
 
     try {
         // --- *** UPDATED: Get the clean lines and map *** ---
@@ -868,13 +935,14 @@ function startRun() {
         isRunning = true;
         controlStack = []; // Reset control stack
         
-
         runProgram(); // Auto-start the async runner
 
     } catch (error) {
         appendLine(error.message, 'error');
         isRunning = false;
         hideLineHighlight();
+        // --- ADD THIS LINE FOR ERROR CASE ---
+        setControls(false); // Re-enable controls
     }
 }
 
@@ -885,8 +953,34 @@ stopBtn.addEventListener('click', ()=>{
     isRunning = false;
     hideLineHighlight();
     appendLine("Execution Stopped", "system");
+
+    // --- ADD THIS LOGIC ---
+    // This is the "interrupt"
+    if (currentInputReject) {
+      currentInputReject();
+      currentInputReject = null; // Clear it
+    }
+    // --- END ADD ---
   }
 });
+
+// --- ADD THIS NEW FUNCTION ---
+function setControls(running) {
+  if (running) {
+    runBtn.disabled = true;
+    runBtn.classList.add('is-running');
+    stopBtn.disabled = false;
+    resetBtn.disabled = true; // Also disable reset
+  } else {
+    runBtn.disabled = false;
+    runBtn.classList.remove('is-running');
+    stopBtn.disabled = true; // Disable stop when not running
+    resetBtn.disabled = false;
+  }
+}
+// --- END OF NEW FUNCTION ---
+
+// restartBtn listener removed
 
 // restartBtn listener removed
 
@@ -1011,5 +1105,8 @@ if (savedCode) {
 updateHighlights();
 updateLineNumbers();
 appendLine("Pseudocode Interpreter Ready.", "system");
+
+// --- ADD THIS LINE ---
+setControls(false); // Set initial button state
 
 
