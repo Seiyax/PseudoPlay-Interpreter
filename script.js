@@ -1278,11 +1278,9 @@ if (showTerminalTab) {
 }
 
 // --- *** NEW: Default Code and Reset Logic *** ---
-// --- *** UPDATED: Use new C-Style Switch example *** ---
 const defaultCode = `START
     
     DECLARE name
-    
   
     PRINT "Enter your name"
     GET name
@@ -1322,4 +1320,5 @@ appendLine("Pseudocode Interpreter Ready.", "system");
 
 // --- ADD THIS LINE ---
 setControls(false); // Set initial button state
+
 
