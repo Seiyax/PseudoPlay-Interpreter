@@ -29,6 +29,12 @@
   --danger: #ef4444;
   --caret: #0f172a;
   --selection: rgba(124, 58, 237, 0.2);
+  
+  /* --- NEW: Syntax Colors --- */
+  --str: #d97706;  /* orange-600 */
+  --char: #0891b2; /* cyan-600 */
+  --num: #059669;  /* emerald-600 */
+  --com: #6b7280;  /* slate-500 */
 }
 
 /* --- UPDATED: GREY DARK MODE --- */
@@ -52,6 +58,12 @@
   --accent-light: rgba(167, 139, 250, 0.15);
   --caret: #f1f5f9;
   --selection: rgba(167, 139, 250, 0.3);
+
+  /* --- NEW: Dark Syntax Colors --- */
+  --str: #f59e0b;  /* amber-500 */
+  --char: #22d3ee; /* cyan-400 */
+  --num: #10b981;  /* emerald-500 */
+  --com: #71717a;  /* zinc-500 */
 }
 
 /* -------------------------------------------------
@@ -210,11 +222,12 @@ pre.highlight { z-index: 10; color: var(--text-primary); pointer-events: none; }
   pointer-events: none;
 }
 
-/* Syntax Highlighting */
+/* --- UPDATED: Syntax Highlighting --- */
 .kw  { color: var(--accent); font-weight: 600; }
-.num { color: #059669; }
-.str { color: #d97706; }
-.com { color: #6b7280; font-style: italic; }
+.num { color: var(--num); }
+.str { color: var(--str); }
+.char { color: var(--char); } /* <-- NEW */
+.com { color: var(--com); font-style: italic; }
 
 /* -------------------------------------------------
    7. Terminal (Flexible)
