@@ -1316,10 +1316,11 @@ if (savedCode) {
 
 updateHighlights();
 updateLineNumbers();
-appendLine("PseudoPlay Ready.", "system");
+appendLine("PseudoPlay Interpreter Ready.", "system");
 
 // --- ADD THIS LINE ---
 setControls(false); // Set initial button state
+
 
 
 
