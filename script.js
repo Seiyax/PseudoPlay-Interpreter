@@ -1280,12 +1280,12 @@ if (showTerminalTab) {
 // --- *** NEW: Default Code and Reset Logic *** ---
 const defaultCode = `START
     
+    // Welcome to PseudoPlay!
+
     DECLARE name
-  
     PRINT "Enter your name"
     GET name
-    
-    PRINT "Hello, " name + "!"
+    PRINT "Hello, " + name + "!"
     
 STOP`;
 
@@ -1320,5 +1320,6 @@ appendLine("Pseudocode Interpreter Ready.", "system");
 
 // --- ADD THIS LINE ---
 setControls(false); // Set initial button state
+
 
 
