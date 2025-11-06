@@ -5,8 +5,8 @@ const lineGutter = document.getElementById('line-gutter');
 const terminal = document.getElementById('terminal');
 const runBtn = document.getElementById('runBtn');
 const stopBtn = document.getElementById('stopBtn');
-const resetBtn = document.getElementById('resetBtn'); // <-- NEW
-// const restartBtn = document.getElementById('restartBtn'); // Removed
+const resetBtn = document.getElementById('resetBtn');
+const saveBtn = document.getElementById('saveBtn'); // <-- NEW
 const clearTerminalBtn = document.getElementById('clearTerminal');
 
 // --- NEW: Banner Elements ---
@@ -35,11 +35,13 @@ let iterationCount = 0;
 let currentInputReject = null;
 
 // keywords for highlighting
+// --- *** UPDATED: Full keyword list from user *** ---
 const keywords = [
-  'START','BEGIN','STOP','END','DECLARE','INIT','INPUT','READ','OUTPUT','PRINT',
-  'SET','LET','IF','ELSE','ELSEIF','ENDIF','FOR','TO','STEP','NEXT',
-  'WHILE','ENDWHILE','REPEAT','UNTIL','PROCEDURE','FUNCTION','CALL',
-  'RETURN','ENDPROCEDURE','ENDFUNCTION'
+  'START','BEGIN','STOP','END','DECLARE','INIT','INPUT','READ','GET','OUTPUT','PRINT',
+  'DISPLAY', 'SET','LET','IF','THEN','ELSE','ELSEIF','ENDIF','FOR','TO','STEP','NEXT',
+  'ENDFOR', 'WHILE','ENDWHILE','REPEAT','UNTIL','PROCEDURE','FUNCTION','CALL',
+  'RETURN','ENDPROCEDURE','ENDFUNCTION', 'SWITCH', 'CASE', 'DEFAULT', 'ENDSWITCH',
+  'CONSTANT', 'ARRAY', 'OF', 'LENGTH', 'FOREACH', 'BREAK', 'CONTINUE', 'COMMENT'
 ];
 
 // --- Syntax Highlight ---
@@ -54,11 +56,20 @@ function updateHighlights() {
   let html = escapeHtml(text);
   let placeholders = [];
 
-  // 1. Store strings and replace with placeholders (supports escaped quotes)
-  html = html.replace(/("(\\.|[^"\\])*"|'(\\.|[^'\\])*')/g, (match) => {
+  // --- *** UPDATED: Separate string and char highlighting *** ---
+  // 1. Store strings (double quotes) and replace with placeholders
+  html = html.replace(/("(\\.|[^"\\])*")/g, (match) => {
     placeholders.push(`<span class="str">${match}</span>`);
     return `__PLACEHOLDER_${placeholders.length - 1}__`;
   });
+
+  // 2. Store chars (single quotes) and replace with placeholders
+  html = html.replace(/('(\\.|[^'\\])*')/g, (match) => {
+    placeholders.push(`<span class="char">${match}</span>`);
+    return `__PLACEHOLDER_${placeholders.length - 1}__`;
+  });
+  // --- *** END OF UPDATE *** ---
+
 
   // --- *** UPDATED: Store multi-line comments first *** ---
   html = html.replace(/(\/\*[\s\S]*?\*\/)/g, (match) => {
@@ -66,25 +77,26 @@ function updateHighlights() {
     return `__PLACEHOLDER_${placeholders.length - 1}__`;
   });
 
-  // 2. Store single-line comments (now including # and --)
-  html = html.replace(/(\/\/.*$|\'.*$|#.*$|--.*$)/gm, (match) => {
+  // 3. Store single-line comments (now including # and --)
+  // --- *** UPDATED: Removed single-quote from comment regex *** ---
+  html = html.replace(/(\/\/.*$|#.*$|--.*$|\bCOMMENT\b.*$)/gm, (match) => {
     placeholders.push(`<span class="com">${escapeHtml(match)}</span>`);
     return `__PLACEHOLDER_${placeholders.length - 1}__`;
   });
 
-  // 3. Highlight keywords
+  // 4. Highlight keywords
   const keywordsRegex = new RegExp('\\b(' + keywords.join('|') + ')\\b', 'gi');
   html = html.replace(keywordsRegex, '<span class="kw">$1</span>');
 
-  // 4. Highlight numbers
+  // 5. Highlight numbers
   html = html.replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="num">$1</span>');
 
-  // 5. Restore placeholders
+  // 6. Restore placeholders
   html = html.replace(/__PLACEHOLDER_(\d+)__/g, (match, index) => {
     return placeholders[index];
   });
 
-  // 6. Set inner HTML
+  // 7. Set inner HTML
   highlight.innerHTML = '<div id="line-highlight"></div>' + html;
 }
 
@@ -204,9 +216,15 @@ editor.addEventListener('keydown', (e)=>{
     const match = prevLine.match(/^(\s*)/);
     const curIndent = match ? match[1] : '';
     const trimmed = prevLine.trim().toUpperCase();
-    const increaseAfter = ['START','BEGIN','IF','FOR','WHILE','REPEAT','PROCEDURE','FUNCTION'];
+    
+    // --- *** UPDATED: Added new keywords to auto-indent *** ---
+    const increaseAfter = [
+        'START','BEGIN','IF','FOR','WHILE','REPEAT','PROCEDURE','FUNCTION', 
+        'SWITCH', 'CASE', 'DEFAULT'
+    ];
+    
     let newIndent = curIndent;
-    for(const k of increaseAfter){ if(trimmed.startsWith(k)) { newIndent = curIndent + indentUnit; break; } }
+    for(const k of increaseAfter){ if(trimmed.startsWith(k) || trimmed.endsWith(k)) { newIndent = curIndent + indentUnit; break; } }
     
     setTimeout(()=>{
       const insertPos = editor.selectionStart;
@@ -243,7 +261,11 @@ editor.addEventListener('keyup', (e) => {
     const currentLineText = text.substring(lineStart, lineEnd === -1 ? text.length : lineEnd);
     const trimmedLine = currentLineText.trim().toUpperCase();
     
-    const deindentKeywords = ['STOP','END','ENDIF','NEXT','ENDWHILE','UNTIL','ENDPROCEDURE','ENDFUNCTION', 'ELSE', 'ELSEIF'];
+    // --- *** UPDATED: Added new keywords to de-indent *** ---
+    const deindentKeywords = [
+        'STOP','END','ENDIF','NEXT','ENDFOR','ENDWHILE','UNTIL','ENDPROCEDURE','ENDFUNCTION', 
+        'ELSE', 'ELSEIF', 'CASE', 'DEFAULT', 'ENDSWITCH', 'BREAK'
+    ];
     
     // --- FIX: Check if keyword is a prefix ---
     if (deindentKeywords.includes(trimmedLine)) {
@@ -281,7 +303,8 @@ editor.addEventListener('keyup', (e) => {
         return `__PLACEHOLDER_${placeholders.length - 1}__`;
     });
     // Store single-line comments
-    tempText = tempText.replace(/(\/\/.*$|\'.*$|#.*$|--.*$)/gm, (match) => {
+    // --- *** UPDATED: Removed single-quote from comment regex *** ---
+    tempText = tempText.replace(/(\/\/.*$|#.*$|--.*$|\bCOMMENT\b.*$)/gm, (match) => {
         placeholders.push(match);
         return `__PLACEHOLDER_${placeholders.length - 1}__`;
     });
@@ -324,7 +347,8 @@ function appendLine(text, type = 'info'){
     div.style.color = '#60a5fa'; // blue-400
     div.textContent = `=== ${text} ===`;
   } else {
-    div.textContent = text;
+    // --- *** UPDATED: Convert all output to string *** ---
+    div.textContent = String(text);
   }
   
   terminal.appendChild(div);
@@ -398,23 +422,26 @@ function preprocessAndValidate(code) {
     
     // Find comment markers
     const commentIndex1 = line.indexOf('//');
-    const commentIndex2 = line.indexOf("'"); // Using ' as a comment marker
+    // --- *** UPDATED: Removed single-quote comment check *** ---
+    // const commentIndex2 = line.indexOf("'"); 
     const commentIndex3 = line.indexOf("#"); // NEW
     const commentIndex4 = line.indexOf("--"); // NEW
+    // --- *** NEW: Find COMMENT keyword *** ---
+    const commentIndex5 = line.toUpperCase().indexOf("COMMENT");
 
     let commentIndex = -1;
 
     // Find the first comment marker
-    const indices = [commentIndex1, commentIndex2, commentIndex3, commentIndex4]
+    // --- *** UPDATED: Removed commentIndex2 *** ---
+    const indices = [commentIndex1, commentIndex3, commentIndex4]
                       .filter(index => index !== -1);
     
-    if (indices.length > 0) {
+    // Handle keyword comment separately
+    if (commentIndex5 === 0) {
+        line = ""; // Treat the whole line as a comment
+    } else if (indices.length > 0) {
       commentIndex = Math.min(...indices);
-    }
-
-    // If a comment marker is found, take the substring before it
-    if (commentIndex !== -1) {
-        line = line.substring(0, commentIndex);
+      line = line.substring(0, commentIndex);
     }
 
     const trimmedLine = line.trim();
@@ -483,14 +510,36 @@ async function executeNextLine(controlStack) {
     const trimmed = programLines[currentLine];
     const line = trimmed.toUpperCase();
     
+    // --- *** BUG FIX: RE-WRITTEN SKIP LOGIC *** ---
     let shouldSkip = false;
     if (controlStack.length > 0) {
-      shouldSkip = controlStack[controlStack.length - 1].skip;
+      const top = controlStack[controlStack.length - 1];
+
+      if (top.type === 'SWITCH') {
+        if (top.isSkipping) {
+            shouldSkip = true; // We've hit a BREAK, skip everything
+        } else if (!top.hasMatch) {
+            shouldSkip = true; // No match yet, skip
+        } else {
+            shouldSkip = false; // We have a match and are falling-through
+        }
+      } else if (top.hasOwnProperty('skip')) { // Check for IF/LOOP
+        shouldSkip = top.skip;
+      }
     }
+    // --- *** END OF BUG FIX *** ---
     
     try { 
     
       // --- 3. Handle Control Flow (always, even if skipping) ---
+      
+      // --- *** NEW: Handle COMMENT keyword *** ---
+      if (line.startsWith('COMMENT')) {
+          currentLine++;
+          return true;
+      }
+      
+      // --- *** UPDATED: Handle ELSE IF two-word variant *** ---
       if(line.startsWith('IF')){
         if (shouldSkip) {
           controlStack.push({ type: 'IF', skip: true, executed: false });
@@ -504,14 +553,15 @@ async function executeNextLine(controlStack) {
         return true;
       }
       
-      if(line.startsWith('ELSEIF')){
+      if(line.startsWith('ELSEIF') || line.startsWith('ELSE IF')){
         const top = controlStack[controlStack.length - 1];
         if (!top || top.type !== 'IF') { throw new Error("ELSEIF without matching IF."); }
         
         if (top.executed) {
           top.skip = true;
         } else if (!top.executed) {
-          const condition = trimmed.replace(/^ELSEIF/i,'').replace(/THEN$/i,'').trim();
+          // --- *** UPDATED: Handle two-word variant *** ---
+          const condition = trimmed.replace(/^ELSEIF/i,'').replace(/^ELSE IF/i,'').replace(/THEN$/i,'').trim();
           if (!condition) throw new Error("ELSEIF statement has no condition.");
           const conditionResult = evalExpr(condition);
           if (conditionResult) {
@@ -564,7 +614,7 @@ async function executeNextLine(controlStack) {
             variables[name] = startVal;
             const cond = (step > 0) ? (variables[name] <= endVal) : (variables[name] >= endVal);
             if(cond) {
-              controlStack.push({type:'FOR', var:name, end:endVal, step:step, startLine: currentLine, skip: false});
+              controlStack.push({type:'FOR', var:name, end:endVal, step:step, startLine: currentLine, skip: false, broken: false});
             } else {
               controlStack.push({ type: 'LOOP_SKIP', skip: true });
             }
@@ -573,11 +623,12 @@ async function executeNextLine(controlStack) {
         return true;
       }
 
-      if(line.startsWith('NEXT')){
+      // --- *** UPDATED: Added ENDFOR *** ---
+      if(line.startsWith('NEXT') || line.startsWith('ENDFOR')){
         const top = controlStack[controlStack.length - 1];
-        if(!top || (top.type !== 'FOR' && top.type !== 'LOOP_SKIP')) { throw new Error("NEXT without matching FOR loop."); }
+        if(!top || (top.type !== 'FOR' && top.type !== 'LOOP_SKIP')) { throw new Error("NEXT/ENDFOR without matching FOR loop."); }
 
-        if (top.type === 'LOOP_SKIP') {
+        if (top.type === 'LOOP_SKIP' || top.broken) { // --- NEW: Check for broken flag
           controlStack.pop();
         } else {
           variables[top.var] = variables[top.var] + top.step;
@@ -604,7 +655,7 @@ async function executeNextLine(controlStack) {
             const condExpr = trimmed.replace(/^WHILE/i,'').replace(/DO$/i,'').trim();
             if (!condExpr) throw new Error("WHILE statement has no condition.");
             const cond = evalExpr(condExpr);
-            controlStack.push({type:'WHILE', condExpr:condExpr, startLine: currentLine, skip: !cond});
+            controlStack.push({type:'WHILE', condExpr:condExpr, startLine: currentLine, skip: !cond, broken: false});
         }
         currentLine++;
         return true;
@@ -614,7 +665,7 @@ async function executeNextLine(controlStack) {
         const top = controlStack[controlStack.length - 1];
         if(!top || top.type !== 'WHILE') { throw new Error("ENDWHILE without matching WHILE loop."); }
         
-        if (top.skip === true) {
+        if (top.skip === true || top.broken) { // --- NEW: Check for broken flag
           controlStack.pop();
         } else {
           currentLine = top.startLine; // Jump back to WHILE
@@ -628,7 +679,7 @@ async function executeNextLine(controlStack) {
         if (shouldSkip) {
             controlStack.push({ type: 'LOOP_SKIP', skip: true });
         } else {
-            controlStack.push({type:'REPEAT', startLine: currentLine, skip: false});
+            controlStack.push({type:'REPEAT', startLine: currentLine, skip: false, broken: false});
         }
         currentLine++;
         return true;
@@ -638,7 +689,7 @@ async function executeNextLine(controlStack) {
         const top = controlStack[controlStack.length - 1];
         if(!top || (top.type !== 'REPEAT' && top.type !== 'LOOP_SKIP')) { throw new Error("UNTIL without matching REPEAT loop."); }
 
-        if (top.type === 'LOOP_SKIP') {
+        if (top.type === 'LOOP_SKIP' || top.broken) { // --- NEW: Check for broken flag
             controlStack.pop();
         } else {
             const condExpr = trimmed.replace(/^UNTIL/i,'').trim();
@@ -654,6 +705,111 @@ async function executeNextLine(controlStack) {
         currentLine++;
         return true;
       }
+
+      // --- *** UPDATED: C-Style SWITCH Flow (always) *** ---
+      if(line.startsWith('SWITCH')){
+        if (shouldSkip) {
+            controlStack.push({ type: 'SWITCH_SKIP', skip: true });
+        } else {
+            const m = trimmed.match(/^SWITCH\s*\((.+)\)$/i);
+            if (!m) throw new Error("Invalid SWITCH syntax. Expected: SWITCH (expression)");
+            const val = evalExpr(m[1]);
+            controlStack.push({ type: 'SWITCH', switchValue: val, hasMatch: false, isSkipping: false });
+        }
+        currentLine++;
+        return true;
+      }
+
+      if(line.startsWith('CASE')){
+        const top = controlStack[controlStack.length - 1];
+        if (!top || (top.type !== 'SWITCH' && top.type !== 'SWITCH_SKIP')) {
+            throw new Error("CASE without matching SWITCH.");
+        }
+        
+        if (top.type === 'SWITCH_SKIP') {
+            // This whole switch block is skipped, do nothing
+        } else if (top.isSkipping) {
+            // We've hit a break, do nothing
+        } else {
+            const m = trimmed.match(/^CASE\s+(.+):$/i);
+            if (!m) throw new Error("Invalid CASE syntax. Expected: CASE value:");
+            
+            if (top.hasMatch) {
+                // We are in fall-through mode, so we run
+            } else {
+                const caseVal = evalExpr(m[1]);
+                if (caseVal === top.switchValue) {
+                    top.hasMatch = true;
+                }
+            }
+        }
+        currentLine++;
+        return true;
+      }
+
+      if(line.startsWith('DEFAULT')){
+        const top = controlStack[controlStack.length - 1];
+        if (!top || (top.type !== 'SWITCH' && top.type !== 'SWITCH_SKIP')) {
+            throw new Error("DEFAULT without matching SWITCH.");
+        }
+        if (top.type === 'SWITCH_SKIP') {
+            // block is skipped
+        } else if (top.isSkipping) {
+             // We've hit a break, do nothing
+        } else {
+            if (!top.hasMatch) {
+                top.hasMatch = true; // This is now the matching block
+            }
+        }
+        currentLine++;
+        return true;
+      }
+      
+      // --- *** BUG FIX: BREAK LOGIC *** ---
+      if(line.startsWith('BREAK')) {
+        
+        // --- *** THIS IS THE FIX *** ---
+        // If we are supposed to be skipping, just skip this line.
+        // The *only* time BREAK should run is if `shouldSkip` is false.
+        if (shouldSkip) {
+            currentLine++;
+            return true;
+        }
+        // --- *** END OF FIX *** ---
+
+        // If we are not skipping, then this BREAK is "live" and should run.
+        let i = controlStack.length - 1;
+        while(i >= 0) {
+            const block = controlStack[i];
+            if (block.type === 'SWITCH') {
+                block.isSkipping = true; // Tell SWITCH to skip remaining lines
+                break;
+            }
+            if (block.type === 'FOR' || block.type === 'WHILE' || block.type === 'REPEAT') {
+                block.broken = true; // Tell loop END to not loop
+                block.skip = true; // Tell interpreter to skip lines
+                break;
+            }
+            i--;
+        }
+        if (i < 0) throw new Error("BREAK outside of loop or SWITCH block.");
+        
+        currentLine++;
+        return true;
+      }
+      // --- *** END OF BUG FIX *** ---
+
+      if(line.startsWith('ENDSWITCH')){
+        const top = controlStack[controlStack.length - 1];
+        if (!top || (top.type !== 'SWITCH' && top.type !== 'SWITCH_SKIP')) {
+            throw new Error("ENDSWITCH without matching SWITCH.");
+        }
+        controlStack.pop();
+        currentLine++;
+        return true;
+      }
+      // --- *** END OF SWITCH/BREAK LOGIC *** ---
+
 
       // --- 5. Handle normal commands (only if not skipping) ---
       if (shouldSkip) {
@@ -674,8 +830,10 @@ async function executeNextLine(controlStack) {
         return false; // Stop execution
       }
       
-      if(line.startsWith('DECLARE') || line.startsWith('INIT')){
-        const lineAfterKeyword = trimmed.replace(/^(?:DECLARE|INIT)\s+/i, '');
+      // --- *** UPDATED: Added CONSTANT *** ---
+      if(line.startsWith('DECLARE') || line.startsWith('INIT') || line.startsWith('CONSTANT')){
+        // Note: CONSTANT is not truly enforced, treated as DECLARE
+        const lineAfterKeyword = trimmed.replace(/^(?:DECLARE|INIT|CONSTANT)\s+/i, '');
         
         // --- *** UPDATED REGEX (FIX) *** ---
         // This regex splits by comma, but ignores commas inside quotes.
@@ -690,14 +848,18 @@ async function executeNextLine(controlStack) {
   
             if (trimmedPart.includes('=')) {
                 // This is an initialization (e.g., "name = 10")
-                const assignParts = trimmedPart.split('=');
-                varName = assignParts[0].trim();
                 
-                if (assignParts.length < 2 || !assignParts[1].trim()) {
+                // --- *** BUG FIX FROM USER *** ---
+                // --- NEW ROBUST SPLIT LOGIC ---
+                const eqIndex = trimmedPart.indexOf('=');
+                varName = trimmedPart.substring(0, eqIndex).trim();
+                const expression = trimmedPart.substring(eqIndex + 1).trim();
+                
+                if (!expression) { // Check if expression is empty
                     throw new Error(`Missing value in assignment for "${varName}".`);
                 }
-                
-                const expression = assignParts.slice(1).join('=').trim();
+                // --- END BUG FIX ---
+
                 varValue = evalExpr(expression);
   
             } else {
@@ -723,8 +885,9 @@ async function executeNextLine(controlStack) {
         return true;
       }
 
-      if(line.startsWith('OUTPUT') || line.startsWith('PRINT')){
-        const rest = trimmed.replace(/^(?:OUTPUT|PRINT)\s+/i,'');
+      // --- *** UPDATED: Added DISPLAY *** ---
+      if(line.startsWith('OUTPUT') || line.startsWith('PRINT') || line.startsWith('DISPLAY')){
+        const rest = trimmed.replace(/^(?:OUTPUT|PRINT|DISPLAY)\s+/i,'');
 
         // --- *** UPDATED REGEX (FIX) *** ---
         // This regex splits by comma, but ignores commas inside quotes.
@@ -734,7 +897,18 @@ async function executeNextLine(controlStack) {
         for (const part of parts) {
             const trimmedPart = part.trim();
             if (trimmedPart) {
-                outputString += evalExpr(trimmedPart); 
+                
+                // --- *** THIS IS THE CHANGE (Decimal Formatting) *** ---
+                let value = evalExpr(trimmedPart);
+                
+                // Check if the value is a number and has decimal places
+                if (typeof value === 'number' && !Number.isInteger(value)) {
+                    // Format to 2 decimal places
+                    value = value.toFixed(2);
+                }
+                
+                outputString += value; 
+                // --- *** END OF CHANGE *** ---
             }
         }
         appendLine(outputString);
@@ -742,8 +916,9 @@ async function executeNextLine(controlStack) {
         return true;
       }
 
-      if(line.startsWith('INPUT') || line.startsWith('READ')){
-        const rest = trimmed.replace(/^(?:INPUT|READ)\s+/i,'');
+      // --- *** UPDATED: Added READ, GET *** ---
+      if(line.startsWith('INPUT') || line.startsWith('READ') || line.startsWith('GET')){
+        const rest = trimmed.replace(/^(?:INPUT|READ|GET)\s+/i,'');
         const parts = rest.split(',');
         const varName = parts.pop().trim();
         
@@ -786,6 +961,11 @@ async function executeNextLine(controlStack) {
       }
 
       // --- 6. Unhandled ---
+      // --- *** NEW: Check for unimplemented keywords *** ---
+      if (line.startsWith('FUNCTION') || line.startsWith('PROCEDURE') || line.startsWith('ARRAY') || line.startsWith('CONTINUE')) {
+          throw new Error(`"${line.split(' ')[0]}" is a valid keyword, but is not implemented in this interpreter yet.`);
+      }
+      
       throw new Error(`Unknown or invalid syntax: "${trimmed}"`);
     
     } catch (error) { // --- *** THIS IS THE BLOCK TO EDIT *** ---
@@ -880,7 +1060,15 @@ function evalExpr(expr) {
   tempExpr = tempExpr.replace(/\b([A-Za-z_]\w*)\b/g, (m) => {
     if (variables.hasOwnProperty(m)) {
       const val = variables[m];
-      if (val === null) throw new Error(`Variable "${m}" was DECLARED but not given a value.`);
+
+      // --- *** THIS IS THE CHANGE *** ---
+      // Old line that caused the error:
+      // if (val === null) throw new Error(`Variable "${m}" was DECLARESRED but not given a value.`);
+      
+      // New line: Treat uninitialized variables as the value 'null'
+      if (val === null) return null;
+      // --- *** END OF CHANGE *** ---
+
       if (typeof val === 'string') return JSON.stringify(val); // Add quotes back
       return String(val);
     }
@@ -888,14 +1076,22 @@ function evalExpr(expr) {
     return m;
   });
 
+  // --- *** UPDATED: New operators *** ---
   // Replace pseudocode operators with JS operators
   tempExpr = tempExpr.replace(/\bAND\b/gi, '&&')
                      .replace(/\bOR\b/gi, '||')
                      .replace(/\bNOT\b/gi, '!')
+                     .replace(/&&/g, '&&') // Handle C-style
+                     .replace(/\|\|/g, '||') // Handle C-style
+                     .replace(/(?<![<>=!])!/g, '!')   // Handle C-style NOT
                      .replace(/\bDIV\b/gi, 'Math.floor')
                      .replace(/\bMOD\b/gi, '%')
+                     .replace(/(?<!\d)%(?!\d)/g, '%') // Handle C-style MOD
+                     .replace(/\^/g, '**') // Handle C-style Exponent
+                     .replace(/==/g, '===') // Handle C-style
                      .replace(/<>/g, '!==')
-                     .replace(/(?<![=!<>])=(?!=)/g, '==');
+                     .replace(/!=/g, '!==') // Handle C-style
+                     .replace(/(?<![=!<>])=(?!=)/g, '==='); // Keep original single = comparison
 
   // Restore placeholders
   tempExpr = tempExpr.replace(/__PLACEHOLDER_(\d+)__/g, (match, index) => {
@@ -963,6 +1159,22 @@ stopBtn.addEventListener('click', ()=>{
     // --- END ADD ---
   }
 });
+
+// --- *** NEW: Save Button Logic *** ---
+if (saveBtn) {
+  saveBtn.addEventListener('click', () => {
+    const code = editor.value;
+    const blob = new Blob([code], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'pseudocode.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    appendLine("Code saved to pseudocode.txt", "system");
+  });
+}
 
 // --- ADD THIS NEW FUNCTION ---
 function setControls(running) {
@@ -1066,14 +1278,32 @@ if (showTerminalTab) {
 }
 
 // --- *** NEW: Default Code and Reset Logic *** ---
+// --- *** UPDATED: Use new C-Style Switch example *** ---
 const defaultCode = `START
-
-    // Welcome to PseudoPlay!
+    // C-Style Switch/Case Example
     
-    INIT name = ""
-    PRINT "What is your name?"
-    INPUT name
-    PRINT "Hello, " + name + "!"
+    DECLARE discount
+    DECLARE code
+    
+    // You can also ask the user:
+    PRINT "Enter code (A, B, or C):"
+    GET code
+    
+    SWITCH (code)
+        CASE 'A':
+            SET discount = 0.0
+            BREAK
+        CASE 'B':
+            SET discount = 0.1
+            BREAK
+        CASE 'C':
+            SET discount = 0.2
+            BREAK
+        DEFAULT:
+            SET discount = 0.3
+    ENDSWITCH
+    
+    DISPLAY "The discount is: ", discount
     
 STOP`;
 
@@ -1108,5 +1338,3 @@ appendLine("Pseudocode Interpreter Ready.", "system");
 
 // --- ADD THIS LINE ---
 setControls(false); // Set initial button state
-
-
