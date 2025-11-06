@@ -1280,30 +1280,14 @@ if (showTerminalTab) {
 // --- *** NEW: Default Code and Reset Logic *** ---
 // --- *** UPDATED: Use new C-Style Switch example *** ---
 const defaultCode = `START
-    // C-Style Switch/Case Example
     
-    DECLARE discount
-    DECLARE code
+    DECLARE name
     
-    // You can also ask the user:
-    PRINT "Enter code (A, B, or C):"
-    GET code
+  
+    PRINT "Enter your name"
+    GET name
     
-    SWITCH (code)
-        CASE 'A':
-            SET discount = 0.0
-            BREAK
-        CASE 'B':
-            SET discount = 0.1
-            BREAK
-        CASE 'C':
-            SET discount = 0.2
-            BREAK
-        DEFAULT:
-            SET discount = 0.3
-    ENDSWITCH
-    
-    DISPLAY "The discount is: ", discount
+    PRINT "Hello, " name + "!"
     
 STOP`;
 
@@ -1338,3 +1322,4 @@ appendLine("Pseudocode Interpreter Ready.", "system");
 
 // --- ADD THIS LINE ---
 setControls(false); // Set initial button state
+
