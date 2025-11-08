@@ -1,11 +1,4 @@
-/* -------------------------------------------------
-   1. Font Import
-   ------------------------------------------------- */
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
-
-/* -------------------------------------------------
-   2. CSS Variables
-   ------------------------------------------------- */
 :root {
   --font-sans: 'Inter', sans-serif;
   --font-mono: 'Fira Code', monospace;
@@ -29,24 +22,18 @@
   --danger: #ef4444;
   --caret: #0f172a;
   --selection: rgba(124, 58, 237, 0.2);
-
-  /* --- NEW: Char color --- */
-  --char-color: #c026d3; /* fuchsia-600 */
+  --char-color: #c026d3;
 }
-
-/* --- UPDATED: GREY DARK MODE --- */
 .dark {
-  --bg-light: #18181b;       /* Page background (zinc-900) */
-  --bg-primary: #27272a;     /* Editor/Card background (zinc-800) */
-  --bg-secondary: #3f3f46;   /* Button/Header background (zinc-700) */
-  --bg-hover: #52525b;       /* Button hover (zinc-600) */
-  --text-primary: #f4f4f5;   /* (zinc-100) */
-  --text-secondary: #a1a1aa; /* (zinc-400) */
-  --border: #3f3f46;         /* (zinc-700) */
-  --gutter-bg: #27272a;       /* (zinc-800) */
-  --gutter-text: #71717a;     /* (zinc-500) */
-  
-  /* Keeping your preferred terminal colors */
+  --bg-light: #18181b;     
+  --bg-primary: #27272a;  
+  --bg-secondary: #3f3f46;   
+  --bg-hover: #52525b;      
+  --text-primary: #f4f4f5;  
+  --text-secondary: #a1a1aa;
+  --border: #3f3f46;        
+  --gutter-bg: #27272a;      
+  --gutter-text: #71717a;     
   --term-bg: #1c1c1c;
   --term-header: #242424;
   --term-text: #d1d5db;
@@ -55,15 +42,8 @@
   --accent-light: rgba(167, 139, 250, 0.15);
   --caret: #f1f5f9;
   --selection: rgba(167, 139, 250, 0.3);
-
-  /* --- NEW: Char color (Dark) --- */
-  --char-color: #e879f9; /* fuchsia-400 */
+  --char-color: #e879f9;
 }
-
-/* -------------------------------------------------
-   3. Global
-   ------------------------------------------------- */
-/* UPDATED: Allow vertical scroll, hide horizontal */
 html, body {
   min-height: 100vh;
   overflow-x: hidden;
@@ -72,15 +52,9 @@ html, body {
   color: var(--text-primary);
   transition: background 0.3s ease, color 0.3s ease;
 }
-
-/* UPDATED: Removed overflow: hidden */
 .grid, section, aside {
-  /* overflow: hidden; */
-}
 
-/* -------------------------------------------------
-   4. Animations
-   ------------------------------------------------- */
+}
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); } }
@@ -95,10 +69,6 @@ html, body {
 .animate-slideInLeft { animation: slideInLeft 0.5s ease-out; }
 .animate-slideInRight { animation: slideInRight 0.5s ease-out; }
 .animate-pulse-hover:hover { animation: pulse-hover 0.6s ease-in-out; }
-
-/* -------------------------------------------------
-   5. Button Classes
-   ------------------------------------------------- */
 .btn-action {
   width: 40px;
   height: 40px;
@@ -111,35 +81,23 @@ html, body {
   transition: all 0.2s ease;
   border: none;
   cursor: pointer;
-  font-size: 1.25rem; /* For emoji fallback */
-
-  /* --- ADD THESE 3 LINES --- */
-  position: relative; /* For spinner later */
-  overflow: hidden; /* For spinner later */
-  outline: 2px solid transparent; /* Fallback */
+  font-size: 1.25rem;
+  position: relative;
+  overflow: hidden; 
+  outline: 2px solid transparent; 
 }
 .btn-action:hover { background: var(--bg-hover); }
-/* --- THIS IS THE KEY CHANGE (was --success) --- */
 .btn-primary { background: var(--accent); color: #fff; }
-/* --- MAKE HOVER DARKER ACCENT --- */
-.btn-primary:hover { background: #6d28d9; } /* A darker purple */
+.btn-primary:hover { background: #6d28d9; } 
 .btn-danger { background: var(--danger); color: #fff; }
 .btn-danger:hover { background: #e03030; }
 .btn-secondary { color: var(--text-secondary); }
 .btn-secondary:hover { color: var(--text-primary); }
 
-/* --- ADD FOCUS RINGS TO ALL BUTTONS --- */
 .btn-action:focus-visible, .btn-icon-sm:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
-/* For Tailwind-based focus (if you prefer) */
-/* .btn-action:focus, .btn-icon-sm:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--bg-light), 0 0 0 4px var(--accent);
-} */
-
-
 .btn-icon-sm {
   background: transparent;
   color: var(--text-secondary);
@@ -152,17 +110,12 @@ html, body {
   justify-content: center;
   transition: all 0.2s ease;
   cursor: pointer;
-  /* --- ADD THIS LINE --- */
-  outline: 2px solid transparent; /* Fallback */
+  outline: 2px solid transparent;
 }
 .btn-icon-sm:hover {
   background: var(--bg-hover);
   color: var(--text-primary);
 }
-
-/* -------------------------------------------------
-   6. Editor
-   ------------------------------------------------- */
 .editor-container {
   display: flex;
   background: var(--bg-primary);
@@ -182,7 +135,7 @@ html, body {
   user-select: none;
   line-height: 1.6;
   overflow: hidden;
-  font-size: 14px; /* <-- THIS IS THE FIX (was 13px) */
+  font-size: 14px; 
 }
 .editor-wrap { position: relative; flex: 1; }
 textarea.code, pre.highlight {
@@ -196,14 +149,11 @@ textarea.code, pre.highlight {
   background: transparent;
   border: none;
   outline: none;
-  /* FIXED: No wrapping, horizontal scroll for long lines */
   white-space: pre;
   word-wrap: normal;
 }
 textarea.code { color: transparent; caret-color: var(--caret); z-index: 20; resize: none; }
 pre.highlight { z-index: 10; color: var(--text-primary); pointer-events: none; }
-
-/* --- Current Line Highlight --- */
 #line-highlight {
   position: absolute;
   left: 0;
@@ -216,23 +166,15 @@ pre.highlight { z-index: 10; color: var(--text-primary); pointer-events: none; }
   transition: top 0.05s ease-out;
   pointer-events: none;
 }
-
-/* Syntax Highlighting */
 .kw  { color: var(--accent); font-weight: 600; }
 .num { color: #059669; }
 .str { color: #d97706; }
 .com { color: #6b7280; font-style: italic; }
-/* --- NEW: Char style --- */
 .char { color: var(--char-color); }
-
-/* -------------------------------------------------
-   7. Terminal (Flexible)
-   ------------------------------------------------- */
 .term {
   background: var(--term-bg);
   color: var(--term-text);
   padding: 12px 16px;
-  /* flex-grow: 1; <-- THIS LINE WAS DELETED */
   overflow-y: auto;
   overflow-x: hidden;
   font-family: var(--font-mono);
@@ -244,7 +186,6 @@ pre.highlight { z-index: 10; color: var(--text-primary); pointer-events: none; }
 .term .line { 
   white-space: pre-wrap; 
   padding: 2px 0; 
-  /* FIXED: Break long words to prevent overflow on mobile */
   word-break: break-word;
   overflow-wrap: break-word;
 }
@@ -260,9 +201,6 @@ pre.highlight { z-index: 10; color: var(--text-primary); pointer-events: none; }
   font-size: inherit;
 }
 
-/* -------------------------------------------------
-   8. Scrollbars
-   ------------------------------------------------- */
 pre.highlight::-webkit-scrollbar,
 textarea.code::-webkit-scrollbar,
 .term::-webkit-scrollbar {
@@ -279,7 +217,7 @@ textarea.code::-webkit-scrollbar-thumb {
 
 .dark pre.highlight::-webkit-scrollbar-thumb,
 .dark textarea.code::-webkit-scrollbar-thumb {
-  background: #52525b; /* zinc-600 */
+  background: #52525b;
   border: 2px solid var(--bg-primary);
 }
 
@@ -291,21 +229,18 @@ textarea.code::-webkit-scrollbar-thumb {
 .term::-webkit-scrollbar-thumb:hover { background: #777; }
 .term::-webkit-scrollbar-track { background: var(--term-header); }
 
-/* -------------------------------------------------
-   9. Focus & Selection
-   ------------------------------------------------- */
+
 textarea.code::selection { background: var(--selection); }
 textarea.code:focus { outline: 2px solid transparent; }
 
-/* Add this at the end of style.css */
 
 .btn-action.is-running svg {
-  /* Hide the play icon */
+
   opacity: 0;
 }
 
 .btn-action.is-running::after {
-  /* Show the spinner */
+
   content: '';
   position: absolute;
   width: 16px;
@@ -318,16 +253,11 @@ textarea.code:focus { outline: 2px solid transparent; }
   animation: spin 0.6s linear infinite;
 }
 
-/* Style for disabled state */
 .btn-action:disabled {
   cursor: not-allowed;
   opacity: 0.7;
 }
-/* -------------------------------------------------
-   10. LAYOUT HOTFIX
-   ------------------------------------------------- */
-/* This rule uses the ID to override all other 
-   conflicting class rules and fix the scrolling. */
+
 #terminal {
   flex: 1 1 0;
 }
