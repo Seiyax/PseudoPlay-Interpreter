@@ -4,6 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Full Syntax Guide - PseudoPlay</title>
+
+  <meta property="og:title" content="PseudoPlay - Full Syntax Guide" />
+<meta property="og:description" content="The complete syntax reference for PseudoPlay, covering variables, loops, IF/SWITCH, and more." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://pseudoplay-compiler.vercel.app/docs.html" />
+<meta property="og:image" content="https://pseudoplay-compiler.vercel.app/assets/img/preview-img.png" />
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -153,7 +160,7 @@
             </li>
 
             <li class="flex items-center gap-2">
-              <a href="#advanced-keywords" data-target="advanced-keywords" class="toc-link text-text-secondary hover:text-accent transition-all duration-200 flex-1 text-sm font-medium">Advanced Keywords (Syntax Only)</a>
+              <a href="#advanced-keywords" data-target="advanced-keywords" class="toc-link text-text-secondary hover:text-accent transition-all duration-200 flex-1 text-sm font-medium">Advanced Keywords (Coming Soon!)</a>
               <svg class="chevron w-5 h-5 text-accent opacity-70 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
             </li>
             <li class="flex items-center gap-2">
@@ -679,25 +686,16 @@
        
         <div id="advanced-keywords" class="docs-section bg-bg-primary p-6 rounded-xl shadow-lg border border-border mb-6 transition-all duration-300 hover:shadow-xl">
           <button class="accordion-toggle group flex justify-between items-center w-full p-4 rounded-lg bg-bg-secondary hover:bg-bg-hover transition-all duration-200 cursor-pointer">
-            <h2 class="text-2xl font-bold text-text-primary mb-0 transition-colors group-hover:text-accent">Advanced Keywords (Syntax Only)</h2>
+            <h2 class="text-2xl font-bold text-text-primary mb-0 transition-colors group-hover:text-accent">Advanced Keywords (Coming Soon!)</h2>
             <svg class="arrow w-6 h-6 text-accent flex-shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </button>
           <div class="accordion-content pt-4 mt-4 border-t border-border">
-            <p class="text-text-secondary mb-4 leading-relaxed text-base">The following keywords are recognized by the compiler's syntax highlighter but are **not yet implemented** by the executor. Using them will cause an "unimplemented" error.</p>
-            <ul class="list-disc pl-6 text-text-secondary space-y-2">
-              <li><code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">FUNCTION</code> / <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">ENDFUNCTION</code></li>
-              <li><code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">PROCEDURE</code> / <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">ENDPROCEDURE</code></li>
-              <li><code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">CALL</code> / <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">RETURN</code></li>
-              <li><code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">ARRAY</code> / <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">FOREACH</code> / <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">LENGTH</code></li>
-              <li><code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">CONTINUE</code></li>
-            </ul>
-            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">FUNCTION</span> Add(a, b)
-    <span class="kw">RETURN</span> a + b
-<span class="kw">ENDFUNCTION</span></pre>
+
+            
             <div class="warning p-4 rounded-lg mt-4 border-l-4 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border-red-500">
-              <strong>Note:</strong> Calling procedures/functions will error. Full support is coming in future updates.
+              <strong>Note:</strong> Coming Soon!
             </div>
           </div>
         </div>
