@@ -1,59 +1,47 @@
 <!doctype html>
 <html lang="en" class="scroll-smooth">
-<head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Full Syntax Guide - PseudoPlay</title>
+  <title>PseudoPlay Syntax Guide</title>
 
-<!-- 🔗 Universal Social Media Preview (Open Graph + Twitter + General) -->
-<meta property="og:title" content="PseudoPlay - Online Pseudocode Editor" />
-<meta property="og:description" content="A simple, clean, and fast online editor to write, run, and test pseudocode. Perfect for students and learning." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://pseudoplay-compiler.vercel.app/" />
-<meta property="og:image" content="https://pseudoplay-compiler.vercel.app/assets/img/preview-img.png" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
-<meta property="og:locale" content="en_US" />
-<meta property="og:site_name" content="PseudoPlay" />
+  <meta property="og:title" content="PseudoPlay - Full Syntax Guide" />
+  <meta property="og:description" content="The complete pseudocode syntax reference for PseudoPlay, covering variables, loops, IF/SWITCH, and more." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://pseudoplay-compiler.vercel.app/docs.html" />
+  <meta property="og:image" content="https://pseudoplay-compiler.vercel.app/assets/img/preview-img.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:site_name" content="PseudoPlay" />
 
-<!-- ✅ Twitter / X Card (used also by Telegram, LinkedIn, Discord) -->
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:site" content="@pseudoplay" />
-<meta name="twitter:title" content="PseudoPlay - Online Pseudocode Editor" />
-<meta name="twitter:description" content="A clean online compiler to write, run, and test pseudocode instantly." />
-<meta name="twitter:image" content="https://pseudoplay-compiler.vercel.app/assets/img/preview-img.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="PseudoPlay - Full Syntax Guide" />
+  <meta name="twitter:description" content="Master pseudocode with PseudoPlay’s structured syntax guide for beginners and advanced learners." />
+  <meta name="twitter:image" content="https://pseudoplay-compiler.vercel.app/assets/img/preview-img.png" />
 
-<!-- 🌐 General sharing fallbacks (for TikTok, IG, older crawlers) -->
-<meta name="title" content="PseudoPlay - Online Pseudocode Editor" />
-<meta name="description" content="A clean, student-friendly online pseudocode compiler and syntax guide." />
-<link rel="image_src" href="https://pseudoplay-compiler.vercel.app/assets/img/preview-img.png" />
+  <meta name="title" content="PseudoPlay - Full Syntax Guide" />
+  <meta name="description" content="All pseudocode syntax rules in one clean, interactive guide." />
+  <link rel="image_src" href="https://pseudoplay-compiler.vercel.app/assets/img/preview-img.png" />
 
-<!-- 🧭 Favicon + Manifest (for browser icons / PWA hints) -->
-<link rel="icon" href="https://pseudoplay-compiler.vercel.app/assets/img/logo.png" />
-<link rel="apple-touch-icon" href="https://pseudoplay-compiler.vercel.app/assets/img/logo.png" />
-<link rel="manifest" href="/manifest.json" />
-
+  <link rel="icon" href="https://pseudoplay-compiler.vercel.app/assets/img/logo.png" sizes="192x192" />
+  <link rel="apple-touch-icon" href="https://pseudoplay-compiler.vercel.app/assets/img/logo.png" sizes="512x512" />
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="icon" href="assets/img/logo.png" sizes="192x192" />
-<link rel="icon" href="assets/img/logo.png" sizes="512x512" />
   <style>
-    /* --- Fix for scrolling --- */
+
     html, body {
       overflow: auto;
       height: auto;
     }
 
-    /* --- Animation for accordion content --- */
     @keyframes fadeIn { 
       from { opacity: 0; transform: translateY(-10px); } 
       to { opacity: 1; transform: translateY(0); } 
     }
     .accordion-content {
-      /* We will control height with max-height */
       max-height: 0px;
       overflow: hidden;
       transition: max-height 0.4s ease-out, opacity 0.3s ease-out;
@@ -61,52 +49,40 @@
     }
     
     .accordion-content.open {
-      /* A large value to ensure it fits any content */
-      max-height: 3500px; /* Increased max-height for more content */
+      max-height: 3500px;
       opacity: 1;
     }
-    /* --- END OF NEW ACCORDION STYLES --- */
 
-
-    /* --- ADD THIS FOR SCROLL-SPY --- */
     .toc-link.active {
       color: var(--accent);
       font-weight: 600;
       transform: translateX(4px);
     }
-    /* --- END OF SCROLL-SPY STYLES --- */
-    
-    
-    /* --- JS-driven rotation for the arrow --- */
+
     .accordion-toggle.active .arrow {
       transform: rotate(90deg);
     }
 
-    /* --- *** NEW: COPY BUTTON STYLES *** --- */
     .copy-btn {
       position: absolute;
-      top: 0.75rem; /* 12px */
-      right: 0.75rem; /* 12px */
-      padding: 0.375rem; /* 6px */
-      border-radius: 0.375rem; /* 6px */
+      top: 0.75rem; 
+      right: 0.75rem;
+      padding: 0.375rem; 
+      border-radius: 0.375rem;
       background: var(--bg-secondary);
       color: var(--text-secondary);
       border: 1px solid var(--border);
       cursor: pointer;
-      opacity: 0; /* Hidden by default */
+      opacity: 0; 
       transition: all 0.2s ease-in-out;
     }
     .relative:hover .copy-btn {
-      opacity: 1; /* Show on hover of the wrapper */
+      opacity: 1; 
     }
     .copy-btn:hover {
       background: var(--bg-hover);
       color: var(--text-primary);
     }
-    /* --- *** END OF NEW STYLES *** --- */
-
-    /* --- Syntax Highlighting styles for <pre> blocks --- */
-    /* These can't be inlined as they are for generated spans */
     .docs-section .kw { @apply text-accent font-semibold; }
     .docs-section .str { color: var(--str); }
     .docs-section .char { color: var(--char); }
@@ -781,6 +757,9 @@
       </main>
     </div>
 
+    <footer class="text-center text-xs text-text-secondary py-3 border-t border-border animate-fadeInUp">
+      <p>PseudoPlay • </span>Fully updated syntax guide</p>
+    </footer>
 
   </div>
 
@@ -788,4 +767,3 @@
 
 </body>
 </html>
-
