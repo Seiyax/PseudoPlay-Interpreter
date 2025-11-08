@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PseudoPlay</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="icon" href="assets/img/logo.png" sizes="192x192" />
+<link rel="icon" href="assets/img/logo.png" sizes="512x512" />
+
+</head>
+
+<!-- UPDATED: Removed overflow-hidden -->
+<body class="bg-bg-light text-text-primary transition-all duration-300 min-h-screen flex flex-col font-sans antialiased">
+
+  <!-- UPDATED: Removed overflow-hidden. Changed min-h-screen to min-h-0 to work with flex on mobile -->
+  <div class="flex-1 flex flex-col max-w-full w-full p-4 sm:p-6 lg:p-8 gap-6 animate-fadeIn min-h-0 lg:min-h-screen">
+
+    <header class="flex items-center justify-between pb-4 border-b border-border animate-slideDown">
+  <div class="flex items-center gap-4">
+    <h1>
+      <a href="index.html">
+  <img src="assets/img/black-banner.png" 
+       alt="PseudoPlay Logo Light Mode" 
+       id="lightModeBanner" 
+       class="h-8 sm:h-9">
+
+  <img src="assets/img/white-banner.png" 
+       alt="PseudoPlay Logo Dark Mode" 
+       id="darkModeBanner" 
+       class="h-8 sm:h-9 hidden">
+</a>
+
+    </h1>
+    <a href="docs.html" class="text-sm font-medium text-text-secondary hover:text-accent transition-colors">Syntax Guide &rarr;</a>
+  </div>
+
+  <button id="themeToggle" aria-label="Toggle dark mode" class="p-2.5 rounded-xl bg-bg-secondary hover:bg-bg-hover text-text-primary transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50 animate-pulse-hover">
+    <svg id="sunIcon" class="hidden w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+    </svg>
+    <svg id="moonIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+    </svg>
+  </button>
+</header>
+
+    <div class="flex flex-wrap items-center gap-2 p-3 bg-bg-primary rounded-xl shadow-sm border border-border animate-slideInLeft">
+      <div class="flex gap-2">
+        <button id="runBtn" class="btn-action btn-primary" title="Run (Ctrl+Enter)">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <button id="stopBtn" class="btn-action btn-danger" title="Stop">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7h4a1 1 0 011 1v4a1 1 0 01-1 1H8a1 1 0 01-1-1V8a1 1 0 011-1z" clip-rule="evenodd" />
+          </svg>
+        </button>
+        <!-- --- NEW RESET BUTTON --- -->
+        <button id="resetBtn" class="btn-action btn-secondary" title="Reset Editor">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 15l-3-3m0 0l3-3m-3 3h8a4 4 0 110 8h-1"></path>
+          </svg>
+        </button>
+        <!-- --- NEW SAVE BUTTON --- -->
+        <button id="saveBtn" class="btn-action btn-secondary" title="Save to File">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+    
+    <div class="flex lg:hidden border-b border-border -mt-4">
+      <button id="showEditorTab" class="flex-1 p-3 text-center font-medium border-b-2 border-accent text-text-primary">Editor</button>
+      <button id="showTerminalTab" class="flex-1 p-3 text-center font-medium border-b-2 border-transparent text-text-secondary">Output</button>
+    </div>
+
+    <!-- UPDATED: Removed overflow-hidden. Added min-h-[60vh] for mobile -->
+    <div class="flex flex-col lg:flex-row flex-1 min-h-[60vh] lg:min-h-0 gap-6 animate-fadeInUp">
+
+      <!-- UPDATED: Set explicit min-height for mobile -->
+      <section id="editorPanel" class="lg:w-1/2 flex flex-col min-h-[400px] lg:min-h-0 flex-1">
+        <div class="editor-container flex-1 min-h-0 rounded-xl shadow-lg border border-border overflow-hidden animate-fadeIn">
+          <pre id="line-gutter" class="text-gutter-text select-none">1</pre>
+          <div class="editor-wrap">
+            <pre id="highlight" class="highlight"><div id="line-highlight"></div></pre>
+            <textarea id="editor" class="code" spellcheck="false" autocomplete="off" placeholder="// Start typing pseudocode..." aria-label="Pseudocode editor"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- UPDATED: Set explicit min-height for mobile -->
+      <aside id="terminalPanel" class="hidden flex lg:flex lg:w-1/2 flex-col min-h-[300px] lg:min-h-0 flex-1">
+        <div class="flex flex-col bg-bg-primary rounded-xl shadow-lg border border-border flex-1 min-h-0 overflow-hidden">
+          <div class="flex items-center justify-between px-4 py-3 bg-bg-secondary border-b border-border">
+            <div class="flex items-center gap-2 text-sm font-medium text-text-primary">
+              <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+              Terminal
+            </div>
+            <button id="clearTerminal" class="btn-icon-sm" title="Clear terminal">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+            </button>
+          </div>
+          <div id="terminal" class="term flex-1 font-mono text-sm overflow-y-auto overflow-x-hidden"></div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- <footer class="text-center text-xs text-text-secondary py-3 border-t border-border animate-fadeInUp">
+      <p>PseudoPlay </p>
+    </footer>
+  </div> -->
+
+  <script src="script.js"></script>
+
+  </body>
+</html>
+
+

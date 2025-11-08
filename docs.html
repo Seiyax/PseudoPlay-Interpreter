@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Full Syntax Guide - PseudoPlay</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="icon" href="assets/img/logo.png" sizes="192x192" />
+<link rel="icon" href="assets/img/logo.png" sizes="512x512" />
+  <style>
+    /* --- Fix for scrolling --- */
+    html, body {
+      overflow: auto;
+      height: auto;
+    }
+
+    /* --- Animation for accordion content --- */
+    @keyframes fadeIn { 
+      from { opacity: 0; transform: translateY(-10px); } 
+      to { opacity: 1; transform: translateY(0); } 
+    }
+    .accordion-content {
+      /* We will control height with max-height */
+      max-height: 0px;
+      overflow: hidden;
+      transition: max-height 0.4s ease-out, opacity 0.3s ease-out;
+      opacity: 0;
+    }
+    
+    .accordion-content.open {
+      /* A large value to ensure it fits any content */
+      max-height: 3500px; /* Increased max-height for more content */
+      opacity: 1;
+    }
+    /* --- END OF NEW ACCORDION STYLES --- */
+
+
+    /* --- ADD THIS FOR SCROLL-SPY --- */
+    .toc-link.active {
+      color: var(--accent);
+      font-weight: 600;
+      transform: translateX(4px);
+    }
+    /* --- END OF SCROLL-SPY STYLES --- */
+    
+    
+    /* --- JS-driven rotation for the arrow --- */
+    .accordion-toggle.active .arrow {
+      transform: rotate(90deg);
+    }
+
+    /* --- *** NEW: COPY BUTTON STYLES *** --- */
+    .copy-btn {
+      position: absolute;
+      top: 0.75rem; /* 12px */
+      right: 0.75rem; /* 12px */
+      padding: 0.375rem; /* 6px */
+      border-radius: 0.375rem; /* 6px */
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      opacity: 0; /* Hidden by default */
+      transition: all 0.2s ease-in-out;
+    }
+    .relative:hover .copy-btn {
+      opacity: 1; /* Show on hover of the wrapper */
+    }
+    .copy-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+    /* --- *** END OF NEW STYLES *** --- */
+
+    /* --- Syntax Highlighting styles for <pre> blocks --- */
+    /* These can't be inlined as they are for generated spans */
+    .docs-section .kw { @apply text-accent font-semibold; }
+    .docs-section .str { color: var(--str); }
+    .docs-section .char { color: var(--char); }
+    .docs-section .num { color: var(--num); }
+    .docs-section .com { @apply text-slate-500 italic; }
+  </style>
+</head>
+
+<body class="bg-bg-light text-text-primary transition-all duration-300 min-h-screen flex flex-col font-sans antialiased">
+
+  <div class="flex-1 flex flex-col max-w-7xl w-full p-4 sm:p-6 lg:p-8 gap-6 animate-fadeIn mx-auto">
+
+    <header class="flex items-center justify-between pb-4 border-b border-border animate-slideDown">
+      <div class="flex items-center gap-4">
+        <h1>
+          <a href="index.html">
+  <img src="assets/img/black-banner.png" 
+       alt="PseudoPlay Logo Light Mode" 
+       id="lightModeBanner" 
+       class="h-8 sm:h-9">
+
+  <img src="assets/img/white-banner.png" 
+       alt="PseudoPlay Logo Dark Mode" 
+       id="darkModeBanner" 
+       class="h-8 sm:h-9 hidden">
+</a>
+
+        </h1>
+        <a href="index.html" class="text-sm font-medium text-text-secondary hover:text-accent transition-colors">&larr; Back to Editor</a>
+      </div>
+      <button id="themeToggle" aria-label="Toggle dark mode" class="p-2.5 rounded-xl bg-bg-secondary hover:bg-bg-hover text-text-primary transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50 animate-pulse-hover">
+        <svg id="sunIcon" class="hidden w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        <svg id="moonIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+      </button>
+    </header>
+
+    <div class="bg-bg-primary p-8 rounded-xl shadow-lg border border-border mb-8 text-center">
+      <h1 class="text-4xl md:text-5xl font-bold text-text-primary mb-4">PseudoPlay Full Syntax Guide</h1>
+      <p class="text-text-secondary text-lg max-w-3xl mx-auto">A comprehensive guide to writing and compiling pseudocode in PseudoPlay. Learn the basics, advanced features, and best practices.</p>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-8">
+      <aside class="lg:w-1/4">
+        <nav class="toc sticky top-6 bg-bg-primary p-6 rounded-xl shadow-lg border border-border">
+          <h2 class="text-xl font-bold text-text-primary mb-4">Table of Contents</h2>
+          <ul id="toc-links" class="space-y-3">
+            <li class="flex items-center gap-2">
+              <a href="#getting-started" data-target="getting-started" class="toc-link text-text-secondary hover:text-accent transition-all duration-200 flex-1 text-sm font-medium">Getting Started</a>
+              <svg class="chevron w-5 h-5 text-accent opacity-70 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </li>
+            <li class="flex items-center gap-2">
+              <a href="#variables" data-target="variables" class="toc-link text-text-secondary hover:text-accent transition-all duration-200 flex-1 text-sm font-medium">Variables & Assignment</a>
+              <svg class="chevron w-5 h-5 text-accent opacity-70 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </li>
+            <li class="flex items-center gap-2">
+              <a href="#input-output" data-target="input-output" class="toc-link text-text-secondary hover:text-accent transition-all duration-200 flex-1 text-sm font-medium">Input & Output</a>
+              <svg class="chevron w-5 h-5 text-accent opacity-70 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </li>
+            <li class="flex items-center gap-2">
+              <a href="#operators" data-target="operators" class="toc-link text-text-secondary hover:text-accent transition-all duration-200 flex-1 text-sm font-medium">Operators</a>
+              <svg class="chevron w-5 h-5 text-accent opacity-70 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </li>
+            <li class="flex items-center gap-2">
+              <a href="#control-flow" data-target="control-flow" class="toc-link text-text-secondary hover:text-accent transition-all duration-200 flex-1 text-sm font-medium">Control Flow (IF/SWITCH)</a>
+              <svg class="chevron w-5 h-5 text-accent opacity-70 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </li>
+            <li class="flex items-center gap-2">
+              <a href="#loops" data-target="loops" class="toc-link text-text-secondary hover:text-accent transition-all duration-200 flex-1 text-sm font-medium">Loops (FOR, WHILE, REPEAT)</a>
+              <svg class="chevron w-5 h-5 text-accent opacity-70 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </li>
+
+            <li class="flex items-center gap-2">
+              <a href="#advanced-keywords" data-target="advanced-keywords" class="toc-link text-text-secondary hover:text-accent transition-all duration-200 flex-1 text-sm font-medium">Advanced Keywords (Syntax Only)</a>
+              <svg class="chevron w-5 h-5 text-accent opacity-70 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </li>
+            <li class="flex items-center gap-2">
+              <a href="#best-practices" data-target="best-practices" class="toc-link text-text-secondary hover:text-accent transition-all duration-200 flex-1 text-sm font-medium">Best Practices</a>
+              <svg class="chevron w-5 h-5 text-accent opacity-70 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </li>
+            <li class="flex items-center gap-2">
+              <a href="#troubleshooting" data-target="troubleshooting" class="toc-link text-text-secondary hover:text-accent transition-all duration-200 flex-1 text-sm font-medium">Troubleshooting & Errors</a>
+              <svg class="chevron w-5 h-5 text-accent opacity-70 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <main class="flex-1 animate-fadeInUp">
+        <div id="getting-started" class="docs-section bg-bg-primary p-6 rounded-xl shadow-lg border border-border mb-6 transition-all duration-300 hover:shadow-xl">
+          <button class="accordion-toggle group flex justify-between items-center w-full p-4 rounded-lg bg-bg-secondary hover:bg-bg-hover transition-all duration-200 cursor-pointer">
+            <h2 class="text-2xl font-bold text-text-primary mb-0 transition-colors group-hover:text-accent">Getting Started</h2>
+            <svg class="arrow w-6 h-6 text-accent flex-shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <div class="accordion-content pt-4 mt-4 border-t border-border">
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">All programs must start with <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">START</code> (or <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">BEGIN</code>) and end with <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">STOP</code> (or <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">END</code>). The compiler will check your entire code for syntax errors before running it.</p>
+            
+            <h3 class="text-xl font-semibold text-accent mt-6 mb-3 border-b border-border pb-2">Comments</h3>
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">Comments explain code and are ignored by the compiler. Use <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">//</code>, <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">#</code>, <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">--</code>, or <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">COMMENT</code> for single lines. Use <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">/* ... */</code> for multi-line blocks.</p>
+            
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 1: Basic Program</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="com">// This is the main program block</span>
+    <span class="kw">PRINT</span> <span class="str">"Hello, World!"</span>
+<span class="kw">STOP</span></pre>
+
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 2: All Comment Types</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="com">// Single-line comment</span>
+    <span class="com"># Another single-line</span>
+    <span class="com">-- Yet another</span>
+    <span class="kw">COMMENT</span> This is also a comment
+    
+    <span class="com">/*
+      This is a
+      multi-line comment block.
+    */</span>
+<span class="kw">STOP</span></pre>
+
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 3: Simple Logic</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="com">// Declare and assign a variable</span>
+    <span class="kw">INIT</span> x = <span class="num">10</span>
+    <span class="kw">PRINT</span> <span class="str">"The value of x is: "</span>, x
+<span class="kw">STOP</span></pre>
+          </div>
+        </div>
+
+        <div id="variables" class="docs-section bg-bg-primary p-6 rounded-xl shadow-lg border border-border mb-6 transition-all duration-300 hover:shadow-xl">
+          <button class="accordion-toggle group flex justify-between items-center w-full p-4 rounded-lg bg-bg-secondary hover:bg-bg-hover transition-all duration-200 cursor-pointer">
+            <h2 class="text-2xl font-bold text-text-primary mb-0 transition-colors group-hover:text-accent">Variables & Assignment</h2>
+            <svg class="arrow w-6 h-6 text-accent flex-shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <div class="accordion-content pt-4 mt-4 border-t border-border">
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">Variables store data. They must be created with <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">DECLARE</code> or <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">INIT</code> before being used. Values are changed with <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">SET</code>, <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">LET</code>, or <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">=</code>.</p>
+            
+            <h3 class="text-xl font-semibold text-accent mt-6 mb-3 border-b border-border pb-2">Data Types</h3>
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">Data types are inferred automatically. The compiler supports:</p>
+            <ul class="list-disc pl-6 text-text-secondary space-y-2 mb-4">
+              <li><strong>Number:</strong> <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">10</code>, <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">5.5</code></li>
+              <li><strong>String:</strong> <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">"Hello"</code>, <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">"123"</code></li>
+              <li><strong>Character:</strong> <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">'A'</code>, <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">'z'</code></li>
+              <li><strong>Boolean:</strong> <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">TRUE</code> or <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">FALSE</code></li>
+              <li><strong>Null:</strong> An empty/uninitialized value.</li>
+            </ul>
+
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 1: DECLARE (Initialize as null)</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">DECLARE</span> name <span class="com">// 'name' is now null</span>
+    <span class="kw">PRINT</span> <span class="str">"Enter name:"</span>
+    <span class="kw">GET</span> name
+    <span class="kw">PRINT</span> <span class="str">"Hello, "</span> + name
+<span class="kw">STOP</span></pre>
+
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 2: INIT (Declare and Assign)</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT</span> age = <span class="num">25</span>
+    <span class="kw">INIT</span> message = <span class="str">"Hello"</span>
+    <span class="kw">INIT</span> isActive = <span class="kw">TRUE</span>
+    
+    <span class="com">// Multiple declarations on one line</span>
+    <span class="kw">DECLARE</span> x, y, z
+    <span class="kw">INIT</span> a = <span class="num">1</span>, b = <span class="num">2</span>
+<span class="kw">STOP</span></pre>
+
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 3: SET / LET (Re-Assignment)</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT</span> score = <span class="num">0</span>
+    <span class="kw">PRINT</span> score  <span class="com">// 0</span>
+    
+    <span class="kw">SET</span> score = <span class="num">10</span>
+    <span class="kw">PRINT</span> score  <span class="com">// 10</span>
+    
+    <span class="kw">LET</span> score = score + <span class="num">5</span>
+    <span class="kw">PRINT</span> score  <span class="com">// 15</span>
+    
+    score = <span class="num">20</span>  <span class="com">// Direct assignment also works</span>
+    <span class="kw">PRINT</span> score  <span class="com">// 20</span>
+<span class="kw">STOP</span></pre>
+            <div class="warning p-4 rounded-lg mt-4 border-l-4 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border-red-500">
+              <strong>Warning:</strong> Using undeclared variables will throw an error. Always use <code class="bg-red-200 dark:bg-red-700/50 px-1 py-0.5 rounded">DECLARE</code> or <code class="bg-red-200 dark:bg-red-700/50 px-1 py-0.5 rounded">INIT</code> before use.
+            </div>
+          </div>
+        </div>
+
+        <div id="input-output" class="docs-section bg-bg-primary p-6 rounded-xl shadow-lg border border-border mb-6 transition-all duration-300 hover:shadow-xl">
+          <button class="accordion-toggle group flex justify-between items-center w-full p-4 rounded-lg bg-bg-secondary hover:bg-bg-hover transition-all duration-200 cursor-pointer">
+            <h2 class="text-2xl font-bold text-text-primary mb-0 transition-colors group-hover:text-accent">Input & Output</h2>
+            <svg class="arrow w-6 h-6 text-accent flex-shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <div class="accordion-content pt-4 mt-4 border-t border-border">
+            <h3 class="text-xl font-semibold text-accent mt-6 mb-3 border-b border-border pb-2">Output (PRINT, DISPLAY, OUTPUT)</h3>
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">Displays values to the terminal. All three keywords work identically. You can combine multiple items with <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">+</code> or commas.</p>
+            
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 1: Basic Output</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">PRINT</span> <span class="str">"Hello World"</span>
+    <span class="kw">OUTPUT</span> <span class="num">12345</span>
+    <span class="kw">DISPLAY</span> <span class="kw">TRUE</span>
+<span class="kw">STOP</span></pre>
+
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 2: Concatenation (Joining)</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT</span> name = <span class="str">"User"</span>
+    <span class="kw">INIT</span> age = <span class="num">21</span>
+    
+    <span class="com">// Use + to join strings</span>
+    <span class="kw">PRINT</span> <span class="str">"Hello, "</span> + name + <span class="str">"!"</span>
+    
+    <span class="com">// Use commas to print multiple items</span>
+    <span class="kw">PRINT</span> <span class="str">"You are "</span>, age, <span class="str">" years old."</span>
+<span class="kw">STOP</span></pre>
+
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 3: Printing Calculations</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT</span> x = <span class="num">10</span>
+    <span class="kw">INIT</span> y = <span class="num">5</span>
+    <span class="kw">PRINT</span> <span class="str">"10 + 5 = "</span>, x + y
+    <span class="kw">PRINT</span> <span class="str">"10 * 5 = "</span>, <span class="num">10</span> * <span class="num">5</span>
+<span class="kw">STOP</span></pre>
+
+            <h3 class="text-xl font-semibold text-accent mt-6 mb-3 border-b border-border pb-2">Input (INPUT, READ, GET)</h3>
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">Reads user input from the terminal and stores it in a declared variable. All three keywords work identically. You can optionally provide a prompt string.</p>
+            
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 1: Simple Input</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">DECLARE</span> age
+    <span class="kw">PRINT</span> <span class="str">"Enter your age:"</span>
+    <span class="kw">INPUT</span> age
+    <span class="kw">PRINT</span> <span class="str">"You are "</span> + age
+<span class="kw">STOP</span></pre>
+
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 2: Input with a Prompt</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">DECLARE</span> name
+    <span class="kw">READ</span> <span class="str">"What is your name?"</span>, name
+    <span class="kw">PRINT</span> <span class="str">"Hello "</span> + name
+<span class="kw">STOP</span></pre>
+
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 3: Input for Calculation</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">DECLARE</span> num1, num2
+    <span class="kw">GET</span> <span class="str">"Enter first number:"</span>, num1
+    <span class="kw">GET</span> <span class="str">"Enter second number:"</span>, num2
+    
+    <span class="kw">INIT</span> sum = num1 + num2
+    <span class="kw">PRINT</span> <span class="str">"The sum is: "</span>, sum
+<span class="kw">STOP</span></pre>
+          </div>
+        </div>
+        
+        <div id="operators" class="docs-section bg-bg-primary p-6 rounded-xl shadow-lg border border-border mb-6 transition-all duration-300 hover:shadow-xl">
+          <button class="accordion-toggle group flex justify-between items-center w-full p-4 rounded-lg bg-bg-secondary hover:bg-bg-hover transition-all duration-200 cursor-pointer">
+            <h2 class="text-2xl font-bold text-text-primary mb-0 transition-colors group-hover:text-accent">Operators</h2>
+            <svg class="arrow w-6 h-6 text-accent flex-shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <div class="accordion-content pt-4 mt-4 border-t border-border">
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">The compiler supports standard arithmetic, comparison, and logical operators.</p>
+            
+            <h3 class="text-xl font-semibold text-accent mt-6 mb-3 border-b border-border pb-2">Arithmetic Operators</h3>
+            <table class="w-full text-left text-text-secondary border-collapse mb-4">
+              <thead>
+                <tr class="border-b border-border">
+                  <th class="p-2 w-1/4">Operator</th>
+                  <th class="p-2 w-1/4">Meaning</th>
+                  <th class="p-2 w-1/2">Example</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-border/50"><td class="p-2 font-mono text-accent">+</td><td class="p-2">Addition</td><td class="p-2 font-mono">5 + 2 <span class="com">// 7</span></td></tr>
+                <tr class="border-b border-border/50"><td class="p-2 font-mono text-accent">-</td><td class="p-2">Subtraction</td><td class="p-2 font-mono">5 - 2 <span class="com">// 3</span></td></tr>
+                <tr class="border-b border-border/50"><td class="p-2 font-mono text-accent">*</td><td class="p-2">Multiplication</td><td class="p-2 font-mono">5 * 2 <span class="com">// 10</span></td></tr>
+                <tr class="border-b border-border/50"><td class="p-2 font-mono text-accent">/</td><td class="p-2">Division</td><td class="p-2 font-mono">5 / 2 <span class="com">// 2.5</span></td></tr>
+                <tr class="border-b border-border/50"><td class="p-2 font-mono text-accent">^</td><td class="p-2">Exponent</td><td class="p-2 font-mono">5 ^ 2 <span class="com">// 25</span></td></tr>
+                <tr class="border-b border-border/50"><td class="p-2 font-mono text-accent">% or MOD</td><td class="p-2">Modulus</td><td class="p-2 font-mono">5 % 2 <span class="com">// 1</span></td></tr>
+                <tr class="border-b border-border/50"><td class="p-2 font-mono text-accent">DIV</td><td class="p-2">Integer Division</td><td class="p-2 font-mono">5 DIV 2 <span class="com">// 2</span></td></tr>
+              </tbody>
+            </table>
+            
+            <h3 class="text-xl font-semibold text-accent mt-6 mb-3 border-b border-border pb-2">Comparison Operators</h3>
+            <table class="w-full text-left text-text-secondary border-collapse mb-4">
+              <thead>
+                <tr class="border-b border-border"><th class="p-2 w-1/4">Operator</th><th class="p-2 w-1/4">Meaning</th><th class="p-2 w-1/2">Example</th></tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-border/50"><td class="p-2 font-mono text-accent">==</td><td class="p-2">Equal to</td><td class="p-2 font-mono">x == 5</td></tr>
+                <tr class="border-b border-border/50"><td class="p-2 font-mono text-accent">!= or <></td><td class="p-2">Not equal to</td><td class="p-2 font-mono">x != 5</td></tr>
+                <tr class="border-b border-border/50"><td class="p-2 font-mono text-accent">></td><td class="p-2">Greater than</td><td class="p-2 font-mono">x > 5</td></tr>
+                <tr class="border-b border-border/50"><td class="p-2 font-mono text-accent"><</td><td class="p-2">Less than</td><td class="p-2 font-mono">x < 5</td></tr>
+                <tr class="border-b border-border/50"><td class="p-2 font-mono text-accent">>=</td><td class="p-2">Greater or equal</td><td class="p-2 font-mono">x >= 5</td></tr>
+                <tr class="border-b border-border/50"><td class="p-2 font-mono text-accent"><=</td><td class="p-2">Less or equal</td><td class="p-2 font-mono">x <= 5</td></tr>
+              </tbody>
+            </table>
+            
+            <div class="tip p-4 rounded-lg mt-4 border-l-4 bg-accent-light text-text-primary border-accent">
+              <strong>Important: </strong> Use <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">==</code> for **comparison** (checking if two things are equal). Use a single <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">=</code> for **assignment** (setting a variable's value).
+            </div>
+
+            <h3 class="text-xl font-semibold text-accent mt-6 mb-3 border-b border-border pb-2">Logical Operators</h3>
+            <table class="w-full text-left text-text-secondary border-collapse mb-4">
+              <thead>
+                <tr class="border-b border-border"><th class="p-2 w-1/4">Operator</th><th class="p-2 w-1/4">Meaning</th><th class="p-2 w-1/2">Example</th></tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-border/50"><td class="p-2 font-mono text-accent">AND or &&</td><td class="p-2">And</td><td class="p-2 font-mono">x > 0 AND y < 10</td></tr>
+                <tr class="border-b border-border/50"><td class="p-2 font-mono text-accent">OR or ||</td><td class="p-2">Or</td><td class="p-2 font-mono">x == 0 OR y == 0</td></tr>
+                <tr class="border-b border-border/50"><td class="p-2 font-mono text-accent">NOT or !</td><td class="p-2">Not</td><td class="p-2 font-mono">NOT (x == 0)</td></tr>
+              </tbody>
+            </table>
+
+            <h3 class="text-xl font-semibold text-accent mt-6 mb-3 border-b border-border pb-2">Operator Precedence Examples</h3>
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">Operators are evaluated in a standard order (like PEMDAS). Use parentheses <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">( )</code> to force a specific order.</p>
+
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 1: Arithmetic Precedence</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="com">// Multiplication * before Addition +</span>
+    <span class="kw">INIT</span> result1 = <span class="num">10</span> + <span class="num">5</span> * <span class="num">2</span>  <span class="com">// 10 + (5 * 2) = 20</span>
+    <span class="kw">PRINT</span> result1
+    
+    <span class="com">// Use parentheses to change order</span>
+    <span class="kw">INIT</span> result2 = (<span class="num">10</span> + <span class="num">5</span>) * <span class="num">2</span>  <span class="com">// (10 + 5) * 2 = 30</span>
+    <span class="kw">PRINT</span> result2
+<span class="kw">STOP</span></pre>
+
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 2: Logical Precedence (AND, OR)</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="com">// AND is evaluated before OR</span>
+    <span class="kw">INIT</span> result = <span class="kw">TRUE</span> <span class="kw">OR</span> <span class="kw">FALSE</span> <span class="kw">AND</span> <span class="kw">FALSE</span> <span class="com">// TRUE OR (FALSE AND FALSE) = TRUE</span>
+    <span class="kw">PRINT</span> result
+<span class="kw">STOP</span></pre>
+
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 3: Logical Precedence (NOT)</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT</span> age = <span class="num">20</span>
+    <span class="kw">INIT</span> hasLicense = <span class="kw">FALSE</span>
+    
+    <span class="com">// NOT is evaluated first</span>
+    <span class="kw">IF</span> age >= <span class="num">18</span> <span class="kw">AND</span> <span class="kw">NOT</span> hasLicense <span class="kw">THEN</span>
+        <span class="kw">PRINT</span> <span class="str">"You are old enough, but need a license."</span>
+    <span class="kw">ENDIF</span>
+<span class="kw">STOP</span></pre>
+          </div>
+        </div>
+
+
+        <div id="control-flow" class="docs-section bg-bg-primary p-6 rounded-xl shadow-lg border border-border mb-6 transition-all duration-300 hover:shadow-xl">
+          <button class="accordion-toggle group flex justify-between items-center w-full p-4 rounded-lg bg-bg-secondary hover:bg-bg-hover transition-all duration-200 cursor-pointer">
+            <h2 class="text-2xl font-bold text-text-primary mb-0 transition-colors group-hover:text-accent">Control Flow (IF/SWITCH)</h2>
+            <svg class="arrow w-6 h-6 text-accent flex-shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <div class="accordion-content pt-4 mt-4 border-t border-border">
+            <h3 class="text-xl font-semibold text-accent mt-6 mb-3 border-b border-border pb-2">IF / ELSEIF / ELSE</h3>
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">Executes code blocks based on a boolean condition. Supports <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">IF</code>, <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">ELSEIF</code> (or <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">ELSE IF</code>), and <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">ELSE</code>. The entire structure must end with <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">ENDIF</code>.</p>
+            
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 1: Full Grade Checker</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">DECLARE</span> score
+    <span class="kw">INPUT</span> <span class="str">"Enter score:"</span>, score
+
+    <span class="kw">IF</span> score >= <span class="num">97</span> <span class="kw">THEN</span>
+        <span class="kw">PRINT</span> <span class="str">"Grade: 1.0 - Excellent"</span>
+    <span class="kw">ELSEIF</span> score >= <span class="num">88</span> <span class="kw">THEN</span>
+        <span class="kw">PRINT</span> <span class="str">"Grade: 1.75 - Good"</span>
+    <span class="kw">ELSEIF</span> score = <span class="num">75</span> <span class="kw">THEN</span>
+        <span class="kw">PRINT</span> <span class="str">"Grade: 3.0 - Passing"</span>
+    <span class="kw">ELSE</span>
+        <span class="kw">PRINT</span> <span class="str">"Grade: 5.0 - Failing"</span>
+    <span class="kw">ENDIF</span>
+<span class="kw">STOP</span></pre>
+            
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 2: Nested IF Statements</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT</span> age = <span class="num">20</span>
+    <span class="kw">INIT</span> hasTicket = <span class="kw">TRUE</span>
+    
+    <span class="kw">IF</span> age >= <span class="num">18</span> <span class="kw">THEN</span>
+        <span class="kw">PRINT</span> <span class="str">"Age verified."</span>
+        <span class="kw">IF</span> hasTicket == <span class="kw">TRUE</span> <span class="kw">THEN</span>
+            <span class="kw">PRINT</span> <span class="str">"Welcome to the event!"</span>
+        <span class="kw">ELSE</span>
+            <span class="kw">PRINT</span> <span class="str">"You need a ticket."</span>
+        <span class="kw">ENDIF</span>
+    <span class="kw">ELSE</span>
+        <span class="kw">PRINT</span> <span class="str">"You are too young."</span>
+    <span class="kw">ENDIF</span>
+<span class="kw">STOP</span></pre>
+
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 3: Simple IF / ELSE</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">DECLARE</span> num
+    <span class="kw">GET</span> <span class="str">"Enter a number:"</span>, num
+    
+    <span class="kw">IF</span> num</span> == <span class="num">0</span> <span class="kw">THEN</span>
+        <span class="kw">PRINT</span> <span class="str">"The number is zero."</span>
+    <span class="kw">ELSEIF</span> num % <span class="num">2</span> == <span class="num">0</span> <span class="kw">THEN</span>
+        <span class="kw">PRINT</span> <span class="str">"The number is even."</span>
+    <span class="kw">ELSE</span>
+        <span class="kw">PRINT</span> <span class="str">"The number is odd."</span>
+    <span class="kw">ENDIF</span>
+<span class="kw">STOP</span></pre>
+
+            <h3 class="text-xl font-semibold text-accent mt-6 mb-3 border-b border-border pb-2">SWITCH Statement</h3>
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">Selects one of many code blocks to execute based on an expression. Uses C-style syntax: <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">SWITCH (expression)</code>, <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">CASE value:</code>, <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">DEFAULT:</code>, and <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">BREAK</code>. Ends with <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">ENDSWITCH</code>.</p>
+            
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 1: Basic SWITCH with BREAK</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT</span> discount = <span class="num">0</span>
+    <span class="kw">INIT</span> code = <span class="char">'B'</span>
+    
+    <span class="kw">SWITCH</span> (code)
+        <span class="kw">CASE</span> <span class="char">'A'</span>:
+            <span class="kw">SET</span> discount = <span class="num">0.0</span>
+            <span class="kw">BREAK</span>
+        <span class="kw">CASE</span> <span class="char">'B'</span>:
+            <span class="kw">SET</span> discount = <span class="num">0.1</span>
+            <span class="kw">BREAK</span>
+        <span class="kw">CASE</span> <span class="char">'C'</span>:
+            <span class="kw">SET</span> discount = <span class="num">0.2</span>
+            <span class="kw">BREAK</span>
+    <span class="kw">ENDSWITCH</span>
+    <span class="kw">PRINT</span> <span class="str">"Discount is: "</span>, discount <span class="com">// 0.1</span>
+<span class="kw">STOP</span></pre>
+
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 2: Fall-through (Omitting BREAK)</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT</span> day = <span class="num">2</span>
+    <span class="kw">SWITCH</span> (day)
+        <span class="kw">CASE</span> <span class="num">1</span>:
+        <span class="kw">CASE</span> <span class="num">2</span>:
+        <span class="kw">CASE</span> <span class="num">3</span>:
+        <span class="kw">CASE</span> <span class="num">4</span>:
+        <span class="kw">CASE</span> <span class="num">5</span>:
+            <span class="kw">PRINT</span> <span class="str">"It's a weekday."</span>
+            <span class="kw">BREAK</span>
+        <span class="kw">CASE</span> <span class="num">6</span>:
+        <span class="kw">CASE</span> <span class="num">7</span>:
+            <span class="kw">PRINT</span> <span class="str">"It's the weekend!"</span>
+            <span class="kw">BREAK</span>
+    <span class="kw">ENDSWITCH</span>
+<span class="kw">STOP</span></pre>
+
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 3: Using DEFAULT</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">DECLARE</span> choice
+    <span class="kw">GET</span> <span class="str">"Enter (1)Start or (2)Quit:"</span>, choice
+    
+    <span class="kw">SWITCH</span> (choice)
+        <span class="kw">CASE</span> <span class="num">1</span>:
+            <span class="kw">PRINT</span> <span class="str">"Starting..."</span>
+            <span class="kw">BREAK</span>
+        <span class="kw">CASE</span> <span class="num">2</span>:
+            <span class="kw">PRINT</span> <span class="str">"Quitting..."</span>
+            <span class="kw">BREAK</span>
+        <span class="kw">DEFAULT</span>:
+            <span class="kw">PRINT</span> <span class="str">"Invalid choice."</span>
+    <span class="kw">ENDSWITCH</span>
+<span class="kw">STOP</span></pre>
+          </div>
+        </div>
+
+        <div id="loops" class="docs-section bg-bg-primary p-6 rounded-xl shadow-lg border border-border mb-6 transition-all duration-300 hover:shadow-xl">
+          <button class="accordion-toggle group flex justify-between items-center w-full p-4 rounded-lg bg-bg-secondary hover:bg-bg-hover transition-all duration-200 cursor-pointer">
+            <h2 class="text-2xl font-bold text-text-primary mb-0 transition-colors group-hover:text-accent">Loops (FOR, WHILE, REPEAT)</h2>
+            <svg class="arrow w-6 h-6 text-accent flex-shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <div class="accordion-content pt-4 mt-4 border-t border-border">
+            <h3 class="text-xl font-semibold text-accent mt-6 mb-3 border-b border-border pb-2">FOR Loop</h3>
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">Repeats a block of code a fixed number of times. Uses a counter variable. Optional <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">STEP</code> defines the increment. Ends with <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">NEXT</code> or <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">ENDFOR</code>.</p>
+            
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 1: Count Up</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT </span>i<span class="num"></span>
+    <span class="kw">FOR</span> i = <span class="num">1</span> <span class="kw">TO</span> <span class="num">3</span>
+        <span class="kw">PRINT</span> i
+    <span class="kw">NEXT</span> <span class="com">// Prints 1, 2, 3</span>
+<span class="kw">STOP</span></pre>
+
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 2: Count Down (Negative STEP)</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT </span>i<span class="num"></span>
+    <span class="kw">FOR</span> i = <span class="num">5</span> <span class="kw">TO</span> <span class="num">1</span> <span class="kw">STEP</span> -<span class="num">1</span>
+        <span class="kw">PRINT</span> i
+    <span class="kw">ENDFOR</span>
+    <span class="kw">PRINT</span> <span class="str">"Blast off!"</span>
+<span class="kw">STOP</span></pre>
+
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 3: Skip Counting (STEP 2)</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT </span>i<span class="num"></span>
+    <span class="com">// Print all even numbers under 10</span>
+    <span class="kw">FOR</span> i = <span class="num">0</span> <span class="kw">TO</span> <span class="num">10</span> <span class="kw">STEP</span> <span class="num">2</span>
+        <span class="kw">PRINT</span> i
+    <span class="kw">ENDFOR</span> <span class="com">// Prints 0, 2, 4, 6, 8, 10</span>
+<span class="kw">STOP</span></pre>
+
+            <h3 class="text-xl font-semibold text-accent mt-6 mb-3 border-b border-border pb-2">WHILE Loop</h3>
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">Repeats as long as a condition is <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">TRUE</code>. The condition is checked *before* the loop runs. Ends with <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">ENDWHILE</code>.</p>
+            
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 1: Simple Counter</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT</span> count = <span class="num">0</span>
+    <span class="kw">WHILE</span> count < <span class="num">3</span>
+        <span class="kw">PRINT</span> count
+        count = count + <span class="num">1</span>
+    <span class="kw">ENDWHILE</span> <span class="com">// Prints 0, 1, 2</span>
+<span class="kw">STOP</span></pre>
+
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 2: User Input Validation</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT</span> choice = <span class="str">""</span>
+    <span class="kw">WHILE</span> choice != <span class="str">"yes"</span> <span class="kw">AND</span> choice != <span class="str">"no"</span>
+        <span class="kw">INPUT</span> <span class="str">"Continue? (yes/no)"</span>, choice
+    <span class="kw">ENDWHILE</span>
+    <span class="kw">PRINT</span> <span class="str">"You chose: "</span> + choice
+<span class="kw">STOP</span></pre>
+            
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 3: Countdown</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT</span> countdown = <span class="num">3</span>
+    <span class="kw">WHILE</span> countdown > <span class="num">0</span>
+        <span class="kw">PRINT</span> countdown
+        countdown = countdown - <span class="num">1</span>
+    <span class="kw">ENDWHILE</span>
+    <span class="kw">PRINT</span> <span class="str">"Go!"</span>
+<span class="kw">STOP</span></pre>
+
+            <h3 class="text-xl font-semibold text-accent mt-6 mb-3 border-b border-border pb-2">REPEAT UNTIL Loop</h3>
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">Repeats a block of code *until* a condition becomes <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">TRUE</code>. The block always runs at least once, as the condition is checked at the *end*.</p>
+            
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 1: Input Validation</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">DECLARE</span> num
+    <span class="kw">REPEAT</span>
+        <span class="kw">GET</span> <span class="str">"Enter a number > 10:"</span>, num
+    <span class="kw">UNTIL</span> num > <span class="num">10</span>
+    <span class="kw">PRINT</span> <span class="str">"Finally! You entered "</span>, num
+<span class="kw">STOP</span></pre>
+
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 2: Simple Counter</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT</span> count = <span class="num">1</span>
+    <span class="kw">REPEAT</span>
+        <span class="kw">PRINT</span> count
+        count = count + <span class="num">1</span>
+    <span class="kw">UNTIL</span> count > <span class="num">5</span> <span class="com">// Prints 1, 2, 3, 4, 5</span>
+<span class="kw">STOP</span></pre>
+
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 3: Loop Runs Once</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT</span> x = <span class="num">10</span>
+    <span class="kw">REPEAT</span>
+        <span class="kw">PRINT</span> <span class="str">"This runs once."</span>
+    <span class="kw">UNTIL</span> x == <span class="num">10</span>
+<span class="kw">STOP</span></pre>
+
+            <h3 class="text-xl font-semibold text-accent mt-6 mb-3 border-b border-border pb-2">Exiting Loops with BREAK</h3>
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">The <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">BREAK</code> keyword can be used to exit any loop (`FOR`, `WHILE`, `REPEAT`) immediately.</p>
+            
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 1: BREAK in a FOR loop</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT </span>i<span class="num"></span>
+    <span class="kw">FOR</span> i = <span class="num">1</span> <span class="kw">TO</span> <span class="num">10</span>
+        <span class="kw">PRINT</span> i
+        <span class="kw">IF</span> i == <span class="num">3</span> <span class="kw">THEN</span>
+            <span class="kw">PRINT</span> <span class="str">"Breaking at 3"</span>
+            <span class="kw">BREAK</span>
+        <span class="kw">ENDIF</span>
+    <span class="kw">ENDFOR</span> <span class="com">// Prints 1, 2, 3, "Breaking at 3"</span>
+<span class="kw">STOP</span></pre>
+
+            <h4 class="text-lg font-semibold text-text-primary mt-4 mb-2">Example 2: BREAK in a WHILE loop</h4>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">START</span>
+    <span class="kw">INIT</span> count = <span class="num">0</span>
+    <span class="kw">WHILE</span> <span class="kw">TRUE</span> <span class="com">// An "infinite" loop</span>
+        <span class="kw">PRINT</span> count
+        count = count + <span class="num">1</span>
+        <span class="kw">IF</span> count >= <span class="num">5</span> <span class="kw">THEN</span>
+            <span class="kw">BREAK</span>
+        <span class="kw">ENDIF</span>
+    <span class="kw">ENDWHILE</span> <span class="com">// Prints 0, 1, 2, 3, 4</span>
+<span class="kw">STOP</span></pre>
+
+          </div>
+        </div>
+       
+        <div id="advanced-keywords" class="docs-section bg-bg-primary p-6 rounded-xl shadow-lg border border-border mb-6 transition-all duration-300 hover:shadow-xl">
+          <button class="accordion-toggle group flex justify-between items-center w-full p-4 rounded-lg bg-bg-secondary hover:bg-bg-hover transition-all duration-200 cursor-pointer">
+            <h2 class="text-2xl font-bold text-text-primary mb-0 transition-colors group-hover:text-accent">Advanced Keywords (Syntax Only)</h2>
+            <svg class="arrow w-6 h-6 text-accent flex-shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <div class="accordion-content pt-4 mt-4 border-t border-border">
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">The following keywords are recognized by the compiler's syntax highlighter but are **not yet implemented** by the executor. Using them will cause an "unimplemented" error.</p>
+            <ul class="list-disc pl-6 text-text-secondary space-y-2">
+              <li><code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">FUNCTION</code> / <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">ENDFUNCTION</code></li>
+              <li><code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">PROCEDURE</code> / <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">ENDPROCEDURE</code></li>
+              <li><code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">CALL</code> / <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">RETURN</code></li>
+              <li><code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">ARRAY</code> / <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">FOREACH</code> / <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">LENGTH</code></li>
+              <li><code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">CONTINUE</code></li>
+            </ul>
+            <pre class="bg-bg-secondary p-4 rounded-lg text-text-primary font-mono text-sm leading-relaxed overflow-x-auto shadow-inner mb-4 border border-border"><span class="kw">FUNCTION</span> Add(a, b)
+    <span class="kw">RETURN</span> a + b
+<span class="kw">ENDFUNCTION</span></pre>
+            <div class="warning p-4 rounded-lg mt-4 border-l-4 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border-red-500">
+              <strong>Note:</strong> Calling procedures/functions will error. Full support is coming in future updates.
+            </div>
+          </div>
+        </div>
+
+        <div id="best-practices" class="docs-section bg-bg-primary p-6 rounded-xl shadow-lg border border-border mb-6 transition-all duration-300 hover:shadow-xl">
+          <button class="accordion-toggle group flex justify-between items-center w-full p-4 rounded-lg bg-bg-secondary hover:bg-bg-hover transition-all duration-200 cursor-pointer">
+            <h2 class="text-2xl font-bold text-text-primary mb-0 transition-colors group-hover:text-accent">Best Practices</h2>
+            <svg class="arrow w-6 h-6 text-accent flex-shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <div class="accordion-content pt-4 mt-4 border-t border-border">
+            <ul class="list-disc pl-6 text-text-secondary space-y-2">
+              <li>Use consistent indentation (the editor auto-indents for you!).</li>
+              <li>Use clear and descriptive variable names (e.g., <code class="bg-bg-secondary px-1 py-0.5 rounded">userName</code> instead of <code class="bg-bg-secondary px-1 py-0.5 rounded">x</code>).</li>
+              <li>Declare all variables at the top of your program.</li>
+              <li>Add comments to explain complex or "tricky" parts of your logic.</li>
+              <li>Use <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">==</code> for comparison and <code class="bg-bg-secondary text-accent font-mono px-2 py-1 rounded-md text-sm">=</code> for assignment.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div id="troubleshooting" class="docs-section bg-bg-primary p-6 rounded-xl shadow-lg border border-border mb-6 transition-all duration-300 hover:shadow-xl">
+          <button class="accordion-toggle group flex justify-between items-center w-full p-4 rounded-lg bg-bg-secondary hover:bg-bg-hover transition-all duration-200 cursor-pointer">
+            <h2 class="text-2xl font-bold text-text-primary mb-0 transition-colors group-hover:text-accent">Troubleshooting & Errors</h2>
+            <svg class="arrow w-6 h-6 text-accent flex-shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <div class="accordion-content pt-4 mt-4 border-t border-border">
+            <p class="text-text-secondary mb-4 leading-relaxed text-base">The compiler checks your code in two passes. Errors can be **Compile-Time** or **Run-Time**.</p>
+            <ul class="list-disc pl-6 text-text-secondary space-y-2">
+              <li><strong>Compile-Time Error (Syntax):</strong> Your code is written incorrectly.
+                <ul>
+                    <li>e.g., <code class="bg-bg-secondary px-1 py-0.5 rounded">PRINT "Hello</code> (unclosed string)</li>
+                    <li>e.g., <code class="bg-bg-secondary px-1 py-0.5 rounded">IF x > 5</code> (missing <code class="bg-bg-secondary px-1 py-0.5 rounded">THEN</code>)</li>
+                    <li>e.g., <code class="bg-bg-secondary px-1 py-0.5 rounded">PRINT "Hello" "World"</code> (missing <code class="bg-bg-secondary px-1 py-0.5 rounded">+</code> operator)</li>
+                </ul>
+              </li>
+              <li><strong>Compile-Time Error (Block):</strong> Your code structure is wrong.
+                <ul>
+                    <li>e.g., <code class="bg-bg-secondary px-1 py-0.5 rounded">IF ... ENDWHILE</code> (mismatched blocks)</li>
+                    <li>e.g., <code class="bg-bg-secondary px-1 py-0.5 rounded">ELSE ... ENDIF</code> (missing <code class="bg-bg-secondary px-1 py-0.5 rounded">IF</code>)</li>
+                </ul>
+              </li>
+              <li><strong>Run-Time Error:</strong> Your syntax is valid, but the logic failed.
+                <ul>
+                    <li>e.g., <code class="bg-bg-secondary px-1 py-0.5 rounded">SET x = 10</code> (when <code class="bg-bg-secondary px-1 py-0.5 rounded">x</code> was not declared)</li>
+                    <li>e.g., <code class="bg-bg-secondary px-1 py-0.5 rounded">PRINT 5 / 0</code> (division by zero)</li>
+                    <li>e.g., Potential infinite loop detected.</li>
+                </ul>
+              </li>
+            </ul>
+            <div class="tip p-4 rounded-lg mt-4 border-l-4 bg-accent-light text-text-primary border-accent">
+              <strong>Tip:</strong> The red line highlight shows exactly where the error occurred. Read the terminal message for details.
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+
+    <footer class="text-center text-xs text-text-secondary py-3 border-t border-border animate-fadeInUp">
+      <p>PseudoPlay • </span>Fully updated syntax guide</p>
+    </footer>
+
+  </div>
+
+  <script src="docs.js"></script>
+
+</body>
+</html>
