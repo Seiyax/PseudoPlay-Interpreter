@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PseudoPlay - Compiler</title>
   
-<!-- 🔗 Universal Social Media Preview (Open Graph + Twitter + General) -->
 <meta property="og:title" content="PseudoPlay - Online Pseudocode Editor" />
 <meta property="og:description" content="A simple, clean, and fast online editor to write, run, and test pseudocode. Perfect for students and learning." />
 <meta property="og:type" content="website" />
@@ -16,26 +15,19 @@
 <meta property="og:locale" content="en_US" />
 <meta property="og:site_name" content="PseudoPlay" />
 
-<!-- ✅ Twitter / X Card (used also by Telegram, LinkedIn, Discord) -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@pseudoplay" />
 <meta name="twitter:title" content="PseudoPlay - Online Pseudocode Editor" />
 <meta name="twitter:description" content="A clean online compiler to write, run, and test pseudocode instantly." />
 <meta name="twitter:image" content="https://pseudoplay-compiler.vercel.app/assets/img/preview-img.png" />
 
-<!-- 🌐 General sharing fallbacks (for TikTok, IG, older crawlers) -->
 <meta name="title" content="PseudoPlay - Online Pseudocode Editor" />
 <meta name="description" content="A clean, student-friendly online pseudocode compiler and syntax guide." />
 <link rel="image_src" href="https://pseudoplay-compiler.vercel.app/assets/img/preview-img.png" />
 
-<!-- 🧭 Favicon + Manifest (for browser icons / PWA hints) -->
 <link rel="icon" href="https://pseudoplay-compiler.vercel.app/assets/img/logo.png" />
 <link rel="apple-touch-icon" href="https://pseudoplay-compiler.vercel.app/assets/img/logo.png" />
 <link rel="manifest" href="/manifest.json" />
-
-
-
-
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="style.css" />
@@ -46,10 +38,8 @@
 
 </head>
 
-<!-- UPDATED: Removed overflow-hidden -->
 <body class="bg-bg-light text-text-primary transition-all duration-300 min-h-screen flex flex-col font-sans antialiased">
 
-  <!-- UPDATED: Removed overflow-hidden. Changed min-h-screen to min-h-0 to work with flex on mobile -->
   <div class="flex-1 flex flex-col max-w-full w-full p-4 sm:p-6 lg:p-8 gap-6 animate-fadeIn min-h-0 lg:min-h-screen">
 
     <header class="flex items-center justify-between pb-4 border-b border-border animate-slideDown">
@@ -93,13 +83,11 @@
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7h4a1 1 0 011 1v4a1 1 0 01-1 1H8a1 1 0 01-1-1V8a1 1 0 011-1z" clip-rule="evenodd" />
           </svg>
         </button>
-        <!-- --- NEW RESET BUTTON --- -->
         <button id="resetBtn" class="btn-action btn-secondary" title="Reset Editor">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 15l-3-3m0 0l3-3m-3 3h8a4 4 0 110 8h-1"></path>
           </svg>
         </button>
-        <!-- --- NEW SAVE BUTTON --- -->
         <button id="saveBtn" class="btn-action btn-secondary" title="Save to File">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
@@ -113,10 +101,8 @@
       <button id="showTerminalTab" class="flex-1 p-3 text-center font-medium border-b-2 border-transparent text-text-secondary">Output</button>
     </div>
 
-    <!-- UPDATED: Removed overflow-hidden. Added min-h-[60vh] for mobile -->
     <div class="flex flex-col lg:flex-row flex-1 min-h-[60vh] lg:min-h-0 gap-6 animate-fadeInUp">
 
-      <!-- UPDATED: Set explicit min-height for mobile -->
       <section id="editorPanel" class="lg:w-1/2 flex flex-col min-h-[400px] lg:min-h-0 flex-1">
         <div class="editor-container flex-1 min-h-0 rounded-xl shadow-lg border border-border overflow-hidden animate-fadeIn">
           <pre id="line-gutter" class="text-gutter-text select-none">1</pre>
@@ -127,7 +113,6 @@
         </div>
       </section>
 
-      <!-- UPDATED: Set explicit min-height for mobile -->
       <aside id="terminalPanel" class="hidden flex lg:flex lg:w-1/2 flex-col min-h-[300px] lg:min-h-0 flex-1">
         <div class="flex flex-col bg-bg-primary rounded-xl shadow-lg border border-border flex-1 min-h-0 overflow-hidden">
           <div class="flex items-center justify-between px-4 py-3 bg-bg-secondary border-b border-border">
@@ -145,11 +130,6 @@
         </div>
       </aside>
     </div>
-
-    <!-- <footer class="text-center text-xs text-text-secondary py-3 border-t border-border animate-fadeInUp">
-      <p>PseudoPlay </p>
-    </footer>
-  </div> -->
 
   <script src="script.js"></script>
 
