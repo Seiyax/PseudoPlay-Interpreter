@@ -1244,18 +1244,7 @@ if (showTerminalTab) {
     showEditorTab.classList.remove('text-text-primary', 'border-accent');
   });
 }
-const defaultCode = `START
-    
-    // Welcome to PseudoPlay!
-
-    DECLARE name
-    PRINT "Enter your name"
-    GET name
-    
-    // Prints ur name
-    PRINT "Hello, " + name + "!"
-    
-STOP`;
+const defaultCode = ``;
 
 if (resetBtn) {
   resetBtn.addEventListener('click', () => {
@@ -1279,3 +1268,4 @@ updateHighlights();
 updateLineNumbers();
 appendLine("PseudoPlay Compiler Ready.", "system");
 setControls(false);
+
