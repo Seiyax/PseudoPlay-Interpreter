@@ -1,4 +1,4 @@
-// --- ELEMENTS ---
+
 const editor = document.getElementById('editor');
 const highlight = document.getElementById('highlight');
 const lineGutter = document.getElementById('line-gutter');
@@ -9,17 +9,14 @@ const resetBtn = document.getElementById('resetBtn');
 const saveBtn = document.getElementById('saveBtn');
 const clearTerminalBtn = document.getElementById('clearTerminal');
 
-// --- NEW: Banner Elements ---
 const lightModeBanner = document.getElementById('lightModeBanner');
 const darkModeBanner = document.getElementById('darkModeBanner');
 
-// --- NEW: Mobile Tab Elements ---
 const showEditorTab = document.getElementById('showEditorTab');
 const showTerminalTab = document.getElementById('showTerminalTab');
 const editorPanel = document.getElementById('editorPanel');
 const terminalPanel = document.getElementById('terminalPanel');
 
-// --- NEW: Line Highlight Element ---
 const lineHighlight = document.getElementById('line-highlight');
 
 let logData = "";
@@ -27,17 +24,15 @@ let currentLine = 0;
 let programLines = [];
 let variables = {};
 let isRunning = false;
-let lineMap = []; // To map clean code lines to original editor lines
-// --- REMOVED: let jumpMap = {}; ---
+let lineMap = []; 
 
-// --- Loop safety ---
+
 let maxIterations = 1000000;
 let iterationCount = 0;
 let currentInputReject = null;
-let outputLineCount = 0; // <-- ADD THIS
-const MAX_OUTPUT_LINES = 1000000; // <-- ADD THIS (you can change this value)
+let outputLineCount = 0;
+const MAX_OUTPUT_LINES = 1000000; 
 
-// keywords for highlighting
 const keywords = [
   'START','BEGIN','STOP','END','DECLARE','INIT','INPUT','READ','GET','OUTPUT','PRINT',
   'DISPLAY', 'SET','LET','IF','THEN','ELSE','ELSEIF','ENDIF','FOR','TO','STEP','NEXT',
@@ -47,7 +42,6 @@ const keywords = [
   'AND', 'OR', 'NOT'
 ];
 
-// --- Syntax Highlight ---
 function escapeHtml(s) {
   return s.replace(/&/g,'&amp;')
           .replace(/</g,'&lt;')
@@ -59,46 +53,37 @@ function updateHighlights() {
   let html = escapeHtml(text);
   let placeholders = [];
 
-  // 1. Store strings (double quotes)
   html = html.replace(/("(\\.|[^"\\])*")/g, (match) => {
     placeholders.push(`<span class="str">${match}</span>`);
     return `__PLACEHOLDER_${placeholders.length - 1}__`;
   });
 
-  // 2. Store chars (single quotes)
   html = html.replace(/('(\\.|[^'\\])*')/g, (match) => {
     placeholders.push(`<span class="char">${match}</span>`);
     return `__PLACEHOLDER_${placeholders.length - 1}__`;
   });
 
-  // 3. Store multi-line comments
   html = html.replace(/\/\*.*?\*\//gs, (match) => {
     placeholders.push(`<span class="com">${escapeHtml(match)}</span>`);
     return `__PLACEHOLDER_${placeholders.length - 1}__`;
   });
 
-  // 4. Store single-line comments
   html = html.replace(/(\/\/.*$|#.*$|--.*$|\bCOMMENT\b.*$)/gm, (match) => {
     placeholders.push(`<span class="com">${escapeHtml(match)}</span>`);
     return `__PLACEHOLDER_${placeholders.length - 1}__`;
   });
 
-  // 5. Highlight keywords
   const keywordsRegex = new RegExp('\\b(' + keywords.join('|') + ')\\b', 'gi');
   html = html.replace(keywordsRegex, '<span class="kw">$1</span>');
 
-  // 6. Highlight numbers
   html = html.replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="num">$1</span>');
 
-  // 7. Highlight C-style logical operators (must look for escaped '&amp;')
   html = html.replace(/(&amp;&amp;|\|\||(?<![<>=!])!)/g, '<span class="kw">$1</span>');
 
-  // 8. Restore placeholders
   html = html.replace(/__PLACEHOLDER_(\d+)__/g, (match, index) => {
     return placeholders[index];
   });
 
-  // 9. Set inner HTML
   highlight.innerHTML = '<div id="line-highlight"></div>' + html;
 }
 
@@ -107,8 +92,7 @@ function updateLineNumbers() {
   lineGutter.textContent = Array.from({length: lineCount}, (_, i) => i + 1).join('\n');
 }
 
-// --- Line Highlight Logic ---
-const EDITOR_LINE_HEIGHT = 14 * 1.6; // 14px font-size * 1.6 line-height
+const EDITOR_LINE_HEIGHT = 14 * 1.6;
 
 function highlightCurrentLine(lineIndex) {
     const activeLineHighlight = document.getElementById('line-highlight');
@@ -121,8 +105,6 @@ function hideLineHighlight() {
     const activeLineHighlight = document.getElementById('line-highlight');
     if (activeLineHighlight) activeLineHighlight.style.display = 'none';
 }
-// --- END ---
-
 
 function syncScroll(){
   highlight.scrollTop = editor.scrollTop;
@@ -138,7 +120,6 @@ editor.addEventListener('input', ()=>{
 });
 editor.addEventListener('scroll', syncScroll);
 
-// --- Auto-indent & Auto-pairing ---
 const indentUnit = '    ';
 const pairs = {
   '(': ')',
@@ -223,7 +204,6 @@ editor.addEventListener('keydown', (e)=>{
   }
 });
 
-// --- Auto-de-indent & Auto-uppercase ---
 editor.addEventListener('keyup', (e) => {
   
     if (e.key && e.key.length > 1) {
@@ -240,7 +220,6 @@ editor.addEventListener('keyup', (e) => {
     let text = editor.value;
     let cursorOffset = 0;
 
-    // --- 1. Auto-de-indent logic ---
     const lineStart = text.lastIndexOf('\n', start - 1) + 1;
     const lineEnd = text.indexOf('\n', start);
     const currentLineText = text.substring(lineStart, lineEnd === -1 ? text.length : lineEnd);
@@ -264,7 +243,6 @@ editor.addEventListener('keyup', (e) => {
         }
     }
 
-    // --- 2. Auto-uppercase logic ---
     let currentText = editor.value;
     let upperStart = editor.selectionStart;
     let upperEnd = editor.selectionEnd;
@@ -311,28 +289,25 @@ editor.addEventListener('keyup', (e) => {
     updateLineNumbers();
 });
 
-// --- Terminal utilities ---
 function appendLine(text, type = 'info'){
-  // --- THIS IS THE OUTPUT LIMIT FIX ---
   if (type === 'info') {
     outputLineCount++;
     if (outputLineCount > MAX_OUTPUT_LINES) {
         if (outputLineCount === MAX_OUTPUT_LINES + 1) {
             throw new Error(`Output limit of ${MAX_OUTPUT_LINES} lines reached. Execution halted.`);
         }
-        return; // Stop appending
+        return; 
     }
   }
-  // --- END OF FIX ---
 
   const div = document.createElement('div');
   div.className = 'line';
   
   if (type === 'error') {
-    div.style.color = '#f87171'; // red-400
+    div.style.color = '#f87171';
     div.textContent = `${text}`;
   } else if (type === 'system') {
-    div.style.color = '#60a5fa'; // blue-400
+    div.style.color = '#60a5fa'; 
     div.textContent = `=== ${text} ===`;
   } else {
     div.textContent = String(text);
@@ -385,7 +360,6 @@ clearTerminalBtn.addEventListener('click', ()=>{
 });
 
 
-// --- Syntax Validation Helper ---
 function validateExpressionSyntax(expr, lineNumber) {
     if (!expr || !expr.trim()) {
         throw new Error(`Missing expression on line ${lineNumber}.`);
@@ -394,13 +368,11 @@ function validateExpressionSyntax(expr, lineNumber) {
     let placeholders = [];
     let tempExpr = expr;
 
-    // 1. Remove strings
     tempExpr = tempExpr.replace(/("(\\.|[^"\\])*"|'(\\.|[^'\\])*')/g, (match) => {
         placeholders.push(match);
         return `__PLACEHOLDER_${placeholders.length - 1}__`;
     });
 
-    // 2. Replace pseudocode operators with JS operators FIRST
     tempExpr = tempExpr.replace(/\bAND\b/gi, '&&')
                         .replace(/\bOR\b/gi, '||')
                         .replace(/\bNOT\b/gi, '!')
@@ -411,14 +383,12 @@ function validateExpressionSyntax(expr, lineNumber) {
                         .replace(/!=/g, '!==')
                         .replace(/(?<![=!<>])=(?!=)/g, '===');
 
-    // 3. Replace all *remaining* words (variables) with a single valid variable 'v'
     tempExpr = tempExpr.replace(/\b([A-Za-z_]\w*)\b/g, (m) => {
         if (/^(TRUE|FALSE|null)$/i.test(m)) return m.toLowerCase();
         if (m === 'Math') return 'Math';
         return 'v'; 
     });
-    
-    // 4. Try to compile it
+
     try {
         new Function(`"use strict"; return (${tempExpr});`);
     } catch (e) {
@@ -426,11 +396,9 @@ function validateExpressionSyntax(expr, lineNumber) {
     }
 }
 
-// --- Line-by-Line Syntax Validation Helper ---
 function validateLineSyntax(line, lineNumber) {
     const upper = line.toUpperCase();
-    
-    // 1. Check for unclosed strings
+
     let inString = null;
     for (let i = 0; i < line.length; i++) {
         const char = line[i];
@@ -448,7 +416,6 @@ function validateLineSyntax(line, lineNumber) {
         throw new Error(`Syntax Error on line ${lineNumber}: Unclosed ${inString} quote.`);
     }
 
-    // 2. Check keyword syntax
     try {
         if (upper.startsWith('SET') || upper.startsWith('LET')) {
             const m = line.match(/^(?:SET|LET)\s+([a-zA-Z_]\w*)\s*=\s*(.*)$/i);
@@ -527,22 +494,18 @@ function validateLineSyntax(line, lineNumber) {
     }
 }
 
-// --- `compileCode` (THE "COMPILER") ---
 function compileCode(code) {
   
-  // 1. Clean code and Lint each line
   let cleanCode = code.replace(/\/\*.*?\*\//gs, ''); 
   const allLines = cleanCode.split('\n');
   const cleanProgramLines = []; 
   const newLineMap = []; 
   
-  // --- This stack is ONLY for validation ---
   const blockStack = []; 
 
   for (let i = 0; i < allLines.length; i++) {
     let line = allLines[i];
     
-    // Find comment markers
     const commentIndex1 = line.indexOf('//');
     const commentIndex3 = line.indexOf("#"); 
     const commentIndex4 = line.indexOf("--");
@@ -562,10 +525,8 @@ function compileCode(code) {
     const trimmedLine = line.trim();
     
     if (trimmedLine) {
-      // LINT PASS
       validateLineSyntax(trimmedLine, i + 1);
       
-      // --- BLOCK VALIDATION PASS ---
       const programLineIndex = cleanProgramLines.length;
       const lineUpper = trimmedLine.toUpperCase();
       const keyword = lineUpper.split(' ')[0];
@@ -574,22 +535,20 @@ function compileCode(code) {
           blockStack.push({ type: 'IF', line: programLineIndex });
       }
       else if (keyword === 'ELSEIF' || (keyword === 'ELSE' && lineUpper.startsWith('ELSE IF'))) {
-          const openIf = blockStack[blockStack.length - 1]; // Peek
+          const openIf = blockStack[blockStack.length - 1];
           if (!openIf || (openIf.type !== 'IF' && openIf.type !== 'ELSEIF')) {
               throw new Error(`Block Error on line ${i + 1}: ELSEIF without matching IF.`);
           }
-          // Don't pop, just push. We need the full chain for ELSE.
           blockStack.push({ type: 'ELSEIF', line: programLineIndex });
       }
       else if (keyword === 'ELSE') {
-          const openBlock = blockStack[blockStack.length - 1]; // Peek
+          const openBlock = blockStack[blockStack.length - 1]; 
           if (!openBlock || (openBlock.type !== 'IF' && openBlock.type !== 'ELSEIF')) {
               throw new Error(`Block Error on line ${i + 1}: ELSE without matching IF/ELSEIF.`);
           }
           blockStack.push({ type: 'ELSE', line: programLineIndex });
       }
       else if (keyword === 'ENDIF') {
-          // Pop until we find the matching IF
           let foundIf = false;
           while(blockStack.length > 0) {
               const block = blockStack.pop();
@@ -597,9 +556,8 @@ function compileCode(code) {
                   foundIf = true;
                   break;
               }
-              // Keep popping ELSEIF and ELSE
               if (block.type !== 'ELSEIF' && block.type !== 'ELSE') {
-                  blockStack.push(block); // Put it back, wrong block
+                  blockStack.push(block);
                   break;
               }
           }
@@ -639,7 +597,6 @@ function compileCode(code) {
     }
   }
 
-  // Final validation and checks
   if (cleanProgramLines.length === 0) {
     throw new Error("Code is empty or only contains comments.");
   }
@@ -656,18 +613,12 @@ function compileCode(code) {
       const errorLine = newLineMap[leftover.line] || 'unknown';
       throw new Error(`Unmatched code block: "${leftover.type}" from line ${errorLine} was never closed.`);
   }
-
-  // 4. Return the "Compiled" Program
   return { 
       cleanLines: cleanProgramLines, 
       originalLineMap: newLineMap,
-      // No jumpMap needed for this logic
   };
 }
 
-
-// --- *** NEW: `executeNextLine` (REVERTED TO `controlStack`) *** ---
-// This is the stable, working logic from before the jumpMap bug.
 async function executeNextLine(controlStack) {
     
     if (!isRunning) return false;
@@ -694,7 +645,6 @@ async function executeNextLine(controlStack) {
     const trimmed = programLines[currentLine];
     const line = trimmed.toUpperCase();
     
-    // --- This is the stable `controlStack` skip logic ---
     let shouldSkip = false;
     if (controlStack.length > 0) {
       const top = controlStack[controlStack.length - 1];
@@ -702,20 +652,18 @@ async function executeNextLine(controlStack) {
         if (top.isSkipping) shouldSkip = true;
         else if (!top.hasMatch) shouldSkip = true;
         else shouldSkip = false;
-      } else if (top.hasOwnProperty('skip')) { // FOR, REPEAT, IF
+      } else if (top.hasOwnProperty('skip')) { 
         shouldSkip = top.skip;
       }
     }
     
     try { 
-    
-      // 3. Handle Control Flow
+
       if (line.startsWith('COMMENT')) {
           currentLine++;
           return true;
       }
-      
-      // --- FIXED IF LOGIC (uses controlStack) ---
+
       if(line.startsWith('IF')){
         if (shouldSkip) {
           controlStack.push({ type: 'IF', skip: true, executed: false });
@@ -727,44 +675,40 @@ async function executeNextLine(controlStack) {
         currentLine++;
         return true;
       }
-      
-      // --- FIXED ELSEIF LOGIC (uses controlStack) ---
+
       if(line.startsWith('ELSEIF') || line.startsWith('ELSE IF')){
         const top = controlStack[controlStack.length - 1];
         if (!top || top.type !== 'IF') { throw new Error("ELSEIF without matching IF."); }
         
-        if (top.executed) { // A previous IF/ELSEIF was true
+        if (top.executed) { 
           top.skip = true;
-        } else { // No previous block was true, so we evaluate this one
+        } else {
           const condition = trimmed.match(/^(?:ELSEIF|ELSE IF)\s+(.+)\s+THEN$/i)[1];
           const conditionResult = evalExpr(condition);
           if (conditionResult) {
-            top.executed = true; // Mark that this chain has executed
-            top.skip = false;    // Don't skip this block
+            top.executed = true; 
+            top.skip = false;    
           } else {
-            top.skip = true;     // Skip this block
+            top.skip = true;    
           }
         }
         currentLine++;
         return true;
       }
-
-      // --- FIXED ELSE LOGIC (uses controlStack) ---
       if(line.startsWith('ELSE')){
         const top = controlStack[controlStack.length - 1];
         if (!top || top.type !== 'IF') { throw new Error("ELSE without matching IF."); }
         
-        if (top.executed) { // A previous IF/ELSEIF was true
+        if (top.executed) {
           top.skip = true;
         } else {
           top.skip = false;
-          top.executed = true; // This ELSE block is running
+          top.executed = true; 
         }
         currentLine++;
         return true;
       }
 
-      // --- FIXED ENDIF LOGIC (uses controlStack) ---
       if(line.startsWith('ENDIF')){
         if (controlStack.length === 0 || controlStack[controlStack.length - 1].type !== 'IF') {
            throw new Error("ENDIF without matching IF.");
@@ -774,18 +718,14 @@ async function executeNextLine(controlStack) {
         return true;
       }
 
-      // --- FIXED WHILE LOGIC (uses controlStack) ---
       if(line.startsWith('WHILE')){
         const top = (controlStack.length > 0) ? controlStack[controlStack.length - 1] : null;
         if (top && top.type === 'WHILE' && top.startLine === currentLine) {
-            // Re-evaluating
             const cond = evalExpr(top.condExpr);
             top.skip = !cond;
         } else {
-            // First time
             const condExpr = trimmed.match(/^WHILE\s+(.+?)(?:\s+DO)?$/i)[1];
             if (shouldSkip) {
-                // We are inside another loop/if that is skipping
                 controlStack.push({type:'WHILE', condExpr:condExpr, startLine: currentLine, skip: true, broken: false});
             } else {
                 const cond = evalExpr(condExpr);
@@ -795,8 +735,6 @@ async function executeNextLine(controlStack) {
         currentLine++;
         return true;
       }
-
-      // --- FIXED ENDWHILE LOGIC (uses controlStack) ---
       if(line.startsWith('ENDWHILE')){
         const top = controlStack[controlStack.length - 1];
         if(!top || top.type !== 'WHILE') { throw new Error("ENDWHILE without matching WHILE loop."); }
@@ -804,14 +742,13 @@ async function executeNextLine(controlStack) {
         if (top.skip === true || top.broken) { 
           controlStack.pop();
         } else {
-          currentLine = top.startLine; // Jump back to WHILE
+          currentLine = top.startLine;
           return true;
         }
         currentLine++;
         return true;
       }
-      
-      // --- 4. Handle Stateful Loops (FOR, REPEAT) & SWITCH (use controlStack) ---
+
       if(line.startsWith('FOR')){
         if (shouldSkip) {
             controlStack.push({ type: 'LOOP_SKIP', skip: true });
@@ -846,7 +783,7 @@ async function executeNextLine(controlStack) {
           const cond = (top.step > 0) ? (variables[top.var] <= top.end) : (variables[top.var] >= top.end);
           if(cond){
             currentLine = top.startLine + 1;
-            return true; // Loop back
+            return true;
           } else {
             controlStack.pop();
           }
@@ -875,7 +812,7 @@ async function executeNextLine(controlStack) {
             const condExpr = trimmed.match(/^UNTIL\s+(.+)$/i)[1];
             const cond = evalExpr(condExpr);
             if(!cond){
-              currentLine = top.startLine + 1; // Go to line after REPEAT
+              currentLine = top.startLine + 1; 
               return true;
             } else {
               controlStack.pop();
@@ -885,7 +822,6 @@ async function executeNextLine(controlStack) {
         return true;
       }
 
-      // --- SWITCH Flow ---
       if(line.startsWith('SWITCH')){
         if (shouldSkip) {
             controlStack.push({ type: 'SWITCH_SKIP', skip: true });
@@ -901,10 +837,10 @@ async function executeNextLine(controlStack) {
         const top = controlStack[controlStack.length - 1];
         if(!top || (top.type !== 'SWITCH' && top.type !== 'SWITCH_SKIP')) { throw new Error("CASE without matching SWITCH."); }
         
-        if (top.type === 'SWITCH_SKIP') { /* do nothing */ }
-        else if (top.isSkipping) { /* do nothing */ }
+        if (top.type === 'SWITCH_SKIP') {  }
+        else if (top.isSkipping) { }
         else {
-            if (top.hasMatch) { /* We are in fall-through */ }
+            if (top.hasMatch) {}
             else {
                 const caseVal = evalExpr(trimmed.match(/^CASE\s+(.+):$/i)[1]);
                 if (caseVal === top.switchValue) {
@@ -920,8 +856,8 @@ async function executeNextLine(controlStack) {
         const top = controlStack[controlStack.length - 1];
         if(!top || (top.type !== 'SWITCH' && top.type !== 'SWITCH_SKIP')) { throw new Error("DEFAULT without matching SWITCH."); }
         
-        if (top.type === 'SWITCH_SKIP') { /* do nothing */ }
-        else if (top.isSkipping) { /* do nothing */ }
+        if (top.type === 'SWITCH_SKIP') { }
+        else if (top.isSkipping) { }
         else {
             if (!top.hasMatch) {
                 top.hasMatch = true; 
@@ -967,10 +903,9 @@ async function executeNextLine(controlStack) {
         return true;
       }
 
-      // --- 5. Handle normal commands (only if not skipping) ---
       if (shouldSkip) {
         currentLine++;
-        return true; // Skip and continue
+        return true;
       }
       
       if(line.startsWith('START') || line.startsWith('BEGIN')){
@@ -983,7 +918,7 @@ async function executeNextLine(controlStack) {
         appendLine("Code Execution Successful", "system");
         isRunning = false;
         hideLineHighlight();
-        return false; // Stop execution
+        return false; 
       }
       
       if(line.startsWith('DECLARE') || line.startsWith('INIT') || line.startsWith('CONSTANT')){
@@ -1071,7 +1006,6 @@ async function executeNextLine(controlStack) {
         return true;
       }
 
-      // --- 6. Unhandled ---
       if (line.startsWith('FUNCTION') || line.startsWith('PROCEDURE') || line.startsWith('ARRAY') || line.startsWith('CONTINUE')) {
           throw new Error(`"${line.split(' ')[0]}" is a valid keyword, but is not implemented in this compiler yet.`);
       }
@@ -1084,7 +1018,6 @@ async function executeNextLine(controlStack) {
             hideLineHighlight();
             return false;
         }
-        // --- THIS CATCHES THE OUTPUT LIMIT ERROR ---
         appendLine(`Runtime Error on line ${lineMap[currentLine]}: ${error.message}`, 'error');
         isRunning = false;
         hideLineHighlight();
@@ -1093,9 +1026,8 @@ async function executeNextLine(controlStack) {
 }
 
 
-// --- `runProgram()` ---
 async function runProgram() {
-    // --- REVERTED: controlStack is used for all logic ---
+
     const controlStack = []; 
     
     try {
@@ -1121,7 +1053,6 @@ async function runProgram() {
 }
 
 
-// --- `evalExpr()` ---
 function evalExpr(expr) {
   if (expr === undefined || expr === null) return undefined;
 
@@ -1175,22 +1106,20 @@ function evalExpr(expr) {
   }
 }
 
-// --- `startRun()` ---
 function startRun() {
     terminal.innerHTML = '';
     logData = '';
-    outputLineCount = 0; // <-- RESET THE COUNTER
+    outputLineCount = 0;
     hideLineHighlight();
     setControls(true); 
 
     try {
-        // --- "COMPILE" STEP (Validation only) ---
+
         const { cleanLines, originalLineMap } = compileCode(editor.value);
-        
-        // --- "RUN" STEP PREP ---
+
         programLines = cleanLines;
         lineMap = originalLineMap;
-        // --- REMOVED: jumpMap ---
+
         
         variables = {};
         currentLine = 0;
@@ -1200,7 +1129,7 @@ function startRun() {
         runProgram(); 
 
     } catch (error) {
-        // --- "COMPILE-TIME" ERRORS ---
+
         appendLine(error.message, 'error');
         isRunning = false;
         hideLineHighlight();
@@ -1222,7 +1151,6 @@ stopBtn.addEventListener('click', ()=>{
   }
 });
 
-// --- Save Button Logic ---
 if (saveBtn) {
   saveBtn.addEventListener('click', () => {
     const code = editor.value;
@@ -1238,7 +1166,6 @@ if (saveBtn) {
   });
 }
 
-// --- Control Button State ---
 function setControls(running) {
   if (running) {
     runBtn.disabled = true;
@@ -1253,7 +1180,6 @@ function setControls(running) {
   }
 }
 
-// --- DARK MODE + KEYBOARD ---
 const themeToggle = document.getElementById('themeToggle');
 const sunIcon = document.getElementById('sunIcon');
 const moonIcon = document.getElementById('moonIcon');
@@ -1297,7 +1223,6 @@ editor.addEventListener('keydown', e => {
   }
 });
 
-// --- Mobile Tab Logic ---
 if (showEditorTab) {
   showEditorTab.addEventListener('click', () => {
     editorPanel.classList.remove('hidden');
@@ -1319,8 +1244,6 @@ if (showTerminalTab) {
     showEditorTab.classList.remove('text-text-primary', 'border-accent');
   });
 }
-
-// --- Default Code and Reset Logic ---
 const defaultCode = `START
     
     // Welcome to PseudoPlay!
@@ -1345,7 +1268,6 @@ if (resetBtn) {
   });
 }
 
-// --- Initialize ---
 const savedCode = localStorage.getItem('pseudocodeLabCode');
 if (savedCode) {
   editor.value = savedCode;
@@ -1356,4 +1278,4 @@ if (savedCode) {
 updateHighlights();
 updateLineNumbers();
 appendLine("PseudoPlay Compiler Ready.", "system");
-setControls(false); // Set initial button state
+setControls(false);
